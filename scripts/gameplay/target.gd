@@ -1,6 +1,6 @@
 extends Node3D
 
-const ProcTex := preload("res://scripts/gameplay/procedural_textures.gd")
+const PbrAssets := preload("res://scripts/gameplay/pbr_assets.gd")
 
 var target_type: String = "static"
 var radius: float = 0.75
@@ -21,10 +21,7 @@ func setup(cfg: Dictionary) -> void:
 	_build_mesh()
 
 func _make_wood_mat() -> StandardMaterial3D:
-	var m := StandardMaterial3D.new()
-	m.albedo_texture = ProcTex.get_wood_texture()
-	m.roughness = 0.82
-	return m
+	return PbrAssets.get_pbr_material("wood", Vector3(1.0, 2.0, 1.0), Color(0.86, 0.76, 0.66))
 
 func _build_mesh() -> void:
 	_pivot = Node3D.new()
@@ -102,9 +99,7 @@ func _build_mesh() -> void:
 	cm.radial_segments = 32
 	drum.mesh = cm
 	drum.rotation_degrees.x = 90.0
-	var straw_mat := StandardMaterial3D.new()
-	straw_mat.albedo_color = Color(0.80, 0.66, 0.36)
-	straw_mat.roughness = 0.92
+	var straw_mat := PbrAssets.get_pbr_material("straw", Vector3(2.5, 2.5, 1.0), Color(1.08, 0.96, 0.72))
 	drum.material_override = straw_mat
 	_pivot.add_child(drum)
 

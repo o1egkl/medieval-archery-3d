@@ -1,6 +1,6 @@
 extends Camera3D
 
-const ProcTex := preload("res://scripts/gameplay/procedural_textures.gd")
+const PbrAssets := preload("res://scripts/gameplay/pbr_assets.gd")
 
 signal draw_changed(draw_ratio: float, is_drawing: bool)
 signal shot_fired(origin: Vector3, velocity: Vector3)
@@ -40,9 +40,7 @@ func _build_first_person_bow() -> void:
 	_bow_node.rotation_degrees = Vector3(2.0, 10.0, -14.0)
 	add_child(_bow_node)
 
-	var wood_mat := StandardMaterial3D.new()
-	wood_mat.albedo_texture = ProcTex.get_wood_texture()
-	wood_mat.roughness = 0.65
+	var wood_mat := PbrAssets.get_pbr_material("wood", Vector3(1.0, 2.0, 1.0), Color(0.92, 0.78, 0.62))
 
 	var leather_mat := StandardMaterial3D.new()
 	leather_mat.albedo_color = Color(0.26, 0.17, 0.11)

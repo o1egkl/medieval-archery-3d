@@ -4,6 +4,7 @@ const ArrowScript := preload("res://scripts/gameplay/arrow.gd")
 const TargetScript := preload("res://scripts/gameplay/target.gd")
 const BowControllerScript := preload("res://scripts/gameplay/bow_controller.gd")
 const ProcTex := preload("res://scripts/gameplay/procedural_textures.gd")
+const PbrAssets := preload("res://scripts/gameplay/pbr_assets.gd")
 
 signal hud_updated(state: Dictionary)
 signal hit_feedback(kind: String, points: int, norm_pos: Vector2)
@@ -106,7 +107,11 @@ func _build_biome(biome: String) -> void:
 	var env := Environment.new()
 	env.background_mode = Environment.BG_SKY
 	var sky := Sky.new()
-	var sky_mat := ProceduralSkyMaterial.new()
+	var sky_tex := PbrAssets.get_sky_texture(biome)
+	var sky_mat := PanoramaSkyMaterial.new()
+	if sky_tex != null:
+		sky_mat.panorama = sky_tex
+		sky_mat.energy_multiplier = 1.15 if biome != "fortress" else 0.75
 
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-34.0, 32.0, 0.0)
@@ -116,24 +121,12 @@ func _build_biome(biome: String) -> void:
 	var ground_tint := Color(1.0, 1.0, 1.0)
 	match biome:
 		"village":
-			sky_mat.sky_top_color = Color(0.24, 0.56, 0.92)
-			sky_mat.sky_horizon_color = Color(0.76, 0.88, 0.98)
-			sky_mat.ground_bottom_color = Color(0.22, 0.36, 0.16)
-			sky_mat.ground_horizon_color = Color(0.55, 0.68, 0.50)
 			light.light_color = Color(1.0, 0.96, 0.86)
 			light.light_energy = 1.05
 		"tournament":
-			sky_mat.sky_top_color = Color(0.18, 0.52, 0.94)
-			sky_mat.sky_horizon_color = Color(0.78, 0.90, 1.0)
-			sky_mat.ground_bottom_color = Color(0.20, 0.38, 0.14)
-			sky_mat.ground_horizon_color = Color(0.52, 0.70, 0.48)
 			light.light_color = Color(1.0, 0.95, 0.82)
 			light.light_energy = 1.10
 		"forest":
-			sky_mat.sky_top_color = Color(0.26, 0.24, 0.42)
-			sky_mat.sky_horizon_color = Color(0.88, 0.50, 0.30)
-			sky_mat.ground_bottom_color = Color(0.14, 0.18, 0.12)
-			sky_mat.ground_horizon_color = Color(0.44, 0.32, 0.24)
 			env.fog_enabled = true
 			env.fog_light_color = Color(0.72, 0.48, 0.36)
 			env.fog_density = 0.008
@@ -141,10 +134,6 @@ func _build_biome(biome: String) -> void:
 			light.light_energy = 1.05
 			ground_tint = Color(0.72, 0.74, 0.62)
 		"fortress":
-			sky_mat.sky_top_color = Color(0.04, 0.07, 0.16)
-			sky_mat.sky_horizon_color = Color(0.12, 0.16, 0.28)
-			sky_mat.ground_bottom_color = Color(0.06, 0.07, 0.10)
-			sky_mat.ground_horizon_color = Color(0.14, 0.16, 0.24)
 			env.fog_enabled = true
 			env.fog_light_color = Color(0.12, 0.15, 0.26)
 			env.fog_density = 0.008
@@ -157,22 +146,24 @@ func _build_biome(biome: String) -> void:
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
 	env.ambient_light_energy = 0.50 if biome != "fortress" else 0.35
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
+	env.glow_enabled = (quality != "low")
+	env.glow_intensity = 0.25
+	env.glow_bloom = 0.08
+	if not env.fog_enabled:
+		env.fog_enabled = true
+		env.fog_light_color = Color(0.76, 0.86, 0.96)
+		env.fog_density = 0.0038
 	world_env.environment = env
 	_env_root.add_child(world_env)
 	_env_root.add_child(light)
 
-	# Textured sunlit grass arena + sandy dirt shooting lanes
+	# Organic PBR grass + dirt lane blend shader (1K Albedo + Normal + Roughness)
 	var ground := StaticBody3D.new()
 	var gmesh := MeshInstance3D.new()
 	var pm := PlaneMesh.new()
 	pm.size = Vector2(140.0, 180.0)
 	gmesh.mesh = pm
-	var gmat := StandardMaterial3D.new()
-	gmat.albedo_texture = ProcTex.get_grass_texture()
-	gmat.albedo_color = ground_tint
-	gmat.uv1_scale = Vector3(26.0, 26.0, 1.0)
-	gmat.roughness = 0.92
-	gmesh.material_override = gmat
+	gmesh.material_override = PbrAssets.make_ground_shader_material(ground_tint)
 	ground.add_child(gmesh)
 	var gcol := CollisionShape3D.new()
 	var gshape := BoxShape3D.new()
@@ -183,17 +174,9 @@ func _build_biome(biome: String) -> void:
 	ground.position = Vector3(0.0, 0.0, -55.0)
 	_env_root.add_child(ground)
 
-	# Worn dirt path strip downrange
-	var dirt := MeshInstance3D.new()
-	var dpm := PlaneMesh.new()
-	dpm.size = Vector2(6.5, 82.0)
-	dirt.mesh = dpm
-	dirt.position = Vector3(0.0, 0.015, -42.0)
-	var dmat := StandardMaterial3D.new()
-	dmat.albedo_color = Color(0.50, 0.41, 0.25) * ground_tint
-	dmat.roughness = 0.96
-	dirt.material_override = dmat
-	_env_root.add_child(dirt)
+	# 3D grass tufts scattered via MultiMeshInstance3D (lightweight & lush)
+	if quality != "low":
+		_build_grass_tufts(1400 if quality == "high" else 850, ground_tint)
 
 	# Rolling medieval green hills on the horizon
 	var hill_mat := StandardMaterial3D.new()
@@ -255,10 +238,41 @@ func _build_biome(biome: String) -> void:
 				rain.mesh = rmesh
 				_env_root.add_child(rain)
 
+func _build_grass_tufts(count: int, tint: Color) -> void:
+	var mm_inst := MultiMeshInstance3D.new()
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.instance_count = count
+
+	# Simple lightweight grass blade quad
+	var blade := QuadMesh.new()
+	blade.size = Vector2(0.18, 0.38)
+	var gmat := StandardMaterial3D.new()
+	gmat.albedo_color = Color(0.28, 0.52, 0.16) * tint
+	gmat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	gmat.roughness = 0.88
+	blade.material = gmat
+	mm.mesh = blade
+
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 2026
+	for i in range(count):
+		var x: float = rng.randf_range(-24.0, 24.0)
+		var z: float = rng.randf_range(-68.0, -4.0)
+		# Keep center dirt lane mostly clear of tall grass
+		if absf(x) < 2.6:
+			x = (3.0 + rng.randf_range(0.0, 12.0)) * (-1.0 if x < 0.0 else 1.0)
+		var h_scale: float = rng.randf_range(0.65, 1.45)
+		var rot_y: float = rng.randf_range(0.0, TAU)
+		var tilt_x: float = rng.randf_range(-0.22, 0.22)
+		var basis := Basis.from_euler(Vector3(tilt_x, rot_y, 0.0)).scaled(Vector3(1.0, h_scale, 1.0))
+		mm.set_instance_transform(i, Transform3D(basis, Vector3(x, 0.16 * h_scale, z)))
+
+	mm_inst.multimesh = mm
+	_env_root.add_child(mm_inst)
+
 func _build_fences() -> void:
-	var wood_mat := StandardMaterial3D.new()
-	wood_mat.albedo_texture = ProcTex.get_wood_texture()
-	wood_mat.roughness = 0.88
+	var wood_mat := PbrAssets.get_pbr_material("wood", Vector3(1.0, 2.0, 1.0), Color(0.84, 0.74, 0.62))
 	for side: float in [-1.0, 1.0]:
 		var x: float = side * 9.5
 		for i in range(14):
@@ -280,8 +294,7 @@ func _build_fences() -> void:
 				_env_root.add_child(rail)
 
 func _build_wind_flags() -> void:
-	var wood_mat := StandardMaterial3D.new()
-	wood_mat.albedo_texture = ProcTex.get_wood_texture()
+	var wood_mat := PbrAssets.get_pbr_material("wood", Vector3(1.0, 2.0, 1.0), Color(0.86, 0.76, 0.64))
 	var colors := [Color(0.82, 0.18, 0.16), Color(0.16, 0.40, 0.82), Color(0.92, 0.76, 0.18)]
 	var idx := 0
 	for side: float in [-1.0, 1.0]:
@@ -300,13 +313,16 @@ func _build_wind_flags() -> void:
 			flag_pivot.position = Vector3(side * 9.0, 4.95, -dist)
 			_env_root.add_child(flag_pivot)
 			var flag := MeshInstance3D.new()
-			var fbox := BoxMesh.new()
-			fbox.size = Vector3(2.1, 0.65, 0.05)
-			flag.mesh = fbox
-			flag.position = Vector3(1.05, 0.0, 0.0)
-			var fmat := StandardMaterial3D.new()
-			fmat.albedo_color = colors[idx % colors.size()]
-			flag.material_override = fmat
+			var fplane := PlaneMesh.new()
+			fplane.size = Vector2(2.4, 0.72)
+			fplane.subdivide_width = 14
+			fplane.subdivide_depth = 3
+			flag.mesh = fplane
+			flag.rotation_degrees.x = 90.0
+			flag.position = Vector3(1.2, 0.0, 0.0)
+			var fcol: Color = colors[idx % colors.size()]
+			var scol: Color = Color(0.96, 0.82, 0.22) if fcol.r > 0.5 else Color(0.95, 0.94, 0.90)
+			flag.material_override = PbrAssets.make_flag_shader_material(fcol, scol, wind_speed)
 			flag_pivot.add_child(flag)
 			_flags.append(flag_pivot)
 			idx += 1
@@ -358,10 +374,7 @@ func _build_castle(pos: Vector3) -> void:
 	root.position = pos
 	_env_root.add_child(root)
 
-	var stone_mat := StandardMaterial3D.new()
-	stone_mat.albedo_texture = ProcTex.get_stone_texture()
-	stone_mat.uv1_scale = Vector3(6.0, 3.0, 1.0)
-	stone_mat.roughness = 0.92
+	var stone_mat := PbrAssets.get_pbr_material("stone", Vector3(5.0, 2.5, 1.0), Color(0.88, 0.85, 0.80))
 
 	var roof_mat := StandardMaterial3D.new()
 	roof_mat.albedo_color = Color(0.66, 0.22, 0.18)
@@ -416,8 +429,7 @@ func _build_windmill(pos: Vector3) -> void:
 	var root := Node3D.new()
 	root.position = pos
 	_env_root.add_child(root)
-	var stone_mat := StandardMaterial3D.new()
-	stone_mat.albedo_texture = ProcTex.get_stone_texture()
+	var stone_mat := PbrAssets.get_pbr_material("stone", Vector3(3.0, 3.0, 1.0), Color(0.90, 0.87, 0.82))
 	var body := MeshInstance3D.new()
 	var bm := CylinderMesh.new()
 	bm.top_radius = 2.0
@@ -431,8 +443,7 @@ func _build_windmill(pos: Vector3) -> void:
 	_windmill_blades = Node3D.new()
 	_windmill_blades.position = Vector3(0.0, 8.2, 2.3)
 	root.add_child(_windmill_blades)
-	var wood_mat := StandardMaterial3D.new()
-	wood_mat.albedo_texture = ProcTex.get_wood_texture()
+	var wood_mat := PbrAssets.get_pbr_material("wood", Vector3(1.0, 2.0, 1.0), Color(0.86, 0.76, 0.64))
 	for ang: float in [0.0, 90.0]:
 		var blade := MeshInstance3D.new()
 		var blm := BoxMesh.new()
@@ -481,8 +492,7 @@ func _build_torch(pos: Vector3) -> void:
 	pm.height = 2.6
 	pole.mesh = pm
 	pole.position = pos + Vector3(0.0, 1.3, 0.0)
-	var wood_mat := StandardMaterial3D.new()
-	wood_mat.albedo_texture = ProcTex.get_wood_texture()
+	var wood_mat := PbrAssets.get_pbr_material("wood", Vector3(1.0, 2.0, 1.0), Color(0.86, 0.76, 0.64))
 	pole.material_override = wood_mat
 	_env_root.add_child(pole)
 
