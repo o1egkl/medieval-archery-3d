@@ -1,6 +1,7 @@
 extends Node3D
 
 const PbrAssets := preload("res://scripts/gameplay/pbr_assets.gd")
+const ModelLoader := preload("res://scripts/gameplay/model_loader.gd")
 
 signal target_knocked_down(target_node: Node3D)
 
@@ -49,6 +50,26 @@ func _build_mesh() -> void:
 	var wood_mat := _make_wood_mat()
 
 	if target_type == "barrel_bonus":
+		var glb_barrel := ModelLoader.instantiate_glb("res://assets/models/barrel.glb")
+		# Bright golden-red band so players instantly recognize the optional bonus barrel
+		var halo := MeshInstance3D.new()
+		var hm := TorusMesh.new()
+		hm.inner_radius = radius * 0.72
+		hm.outer_radius = radius * 0.94
+		halo.mesh = hm
+		halo.position.y = 0.05
+		var hmat := StandardMaterial3D.new()
+		hmat.albedo_color = Color(1.0, 0.78, 0.12)
+		hmat.emission_enabled = true
+		hmat.emission = Color(1.0, 0.65, 0.10)
+		hmat.emission_energy_multiplier = 1.4
+		halo.material_override = hmat
+		_pivot.add_child(halo)
+		if glb_barrel != null:
+			glb_barrel.scale = Vector3.ONE * (radius * 2.2)
+			glb_barrel.position.y = -radius * 0.9
+			_pivot.add_child(glb_barrel)
+			return
 		var barrel := MeshInstance3D.new()
 		var mesh := CylinderMesh.new()
 		mesh.top_radius = radius * 0.82

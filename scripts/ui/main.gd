@@ -493,7 +493,7 @@ func _on_hud_updated(st: Dictionary) -> void:
 		return
 	_hud_score_lbl.text = LocalizationManager.t("hud_level_score", {"level": st["level_id"], "score": st["score"], "target": st["target_score"]})
 	var w := float(st["wind_speed"])
-	var arrow_sym := "→" if w > 0.1 else ("←" if w < -0.1 else "•")
+	var arrow_sym := ">>" if w > 0.1 else ("<<" if w < -0.1 else "--")
 	_hud_wind_lbl.text = arrow_sym + " " + LocalizationManager.t("hud_wind", {"speed": "%.1f" % absf(w)})
 	_hud_arrows_lbl.text = LocalizationManager.t("hud_arrows", {"left": st["arrows_left"], "total": st["arrows_total"]})
 	_hud_timer_lbl.visible = bool(st["has_timer"])

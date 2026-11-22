@@ -5,6 +5,7 @@ const TargetScript := preload("res://scripts/gameplay/target.gd")
 const BowControllerScript := preload("res://scripts/gameplay/bow_controller.gd")
 const ProcTex := preload("res://scripts/gameplay/procedural_textures.gd")
 const PbrAssets := preload("res://scripts/gameplay/pbr_assets.gd")
+const ModelLoader := preload("res://scripts/gameplay/model_loader.gd")
 
 signal hud_updated(state: Dictionary)
 signal hit_feedback(kind: String, points: int, norm_pos: Vector2)
@@ -86,7 +87,7 @@ func start_level(level_id: int) -> void:
 		var t := TargetScript.new()
 		_targets_root.add_child(t)
 		t.setup(tcfg)
-		if t.max_hits > 0:
+		if t.max_hits > 0 and t.target_type != "barrel_bonus":
 			_knockable_targets_left += 1
 			t.target_knocked_down.connect(_on_target_knocked_down)
 
@@ -214,20 +215,30 @@ func _build_biome(biome: String) -> void:
 	match biome:
 		"tournament":
 			_build_castle(Vector3(6.0, 0.0, -86.0))
+			_place_glb("res://assets/models/stall.glb", Vector3(-11.2, 0.0, -10.5), 65.0, 3.2)
+			_place_glb("res://assets/models/cart.glb", Vector3(11.4, 0.0, -12.0), -110.0, 3.0)
+			_build_trees(10, ground_tint)
 			_build_pavilion(Vector3(-12.5, 0.0, -18.0), Color(0.84, 0.20, 0.18), Color(0.95, 0.92, 0.85), "tent_rw")
 			_build_pavilion(Vector3(-14.5, 0.0, -34.0), Color(0.18, 0.42, 0.82), Color(0.95, 0.82, 0.22), "tent_by")
 			_build_pavilion(Vector3(12.5, 0.0, -20.0), Color(0.18, 0.42, 0.82), Color(0.95, 0.82, 0.22), "tent_by")
 			_build_pavilion(Vector3(14.0, 0.0, -38.0), Color(0.84, 0.20, 0.18), Color(0.95, 0.92, 0.85), "tent_rw")
 		"village":
 			_build_windmill(Vector3(-14.0, 0.0, -48.0))
+			_place_glb("res://assets/models/cart.glb", Vector3(-11.8, 0.0, -14.0), 40.0, 3.2)
+			_place_glb("res://assets/models/stall.glb", Vector3(11.8, 0.0, -16.0), -70.0, 3.2)
+			_place_glb("res://assets/models/barrel.glb", Vector3(-10.5, 0.0, -11.5), 0.0, 2.2)
 			_build_castle(Vector3(16.0, 0.0, -96.0))
 			_build_trees(10, ground_tint)
 		"forest":
 			_build_trees(26, ground_tint)
+			_place_glb("res://assets/models/campfire.glb", Vector3(-7.0, 0.0, -15.0), 0.0, 2.4)
+			_place_glb("res://assets/models/campfire.glb", Vector3(7.2, 0.0, -21.0), 0.0, 2.4)
 			_build_torch(Vector3(-6.0, 0.0, -18.0))
 			_build_torch(Vector3(6.0, 0.0, -22.0))
 		"fortress":
 			_build_castle(Vector3(0.0, 0.0, -78.0))
+			_place_glb("res://assets/models/siege_catapult.glb", Vector3(-12.5, 0.0, -24.0), 25.0, 3.6)
+			_place_glb("res://assets/models/siege_catapult.glb", Vector3(13.0, 0.0, -34.0), -30.0, 3.6)
 			for tx: float in [-7.0, 7.0]:
 				for tz: float in [-18.0, -38.0, -56.0]:
 					_build_torch(Vector3(tx, 0.0, tz))
@@ -288,27 +299,23 @@ func _build_grass_tufts(count: int, tint: Color) -> void:
 	mm_inst.multimesh = mm
 	_env_root.add_child(mm_inst)
 
+func _place_glb(res_path: String, pos: Vector3, rot_y_deg: float = 0.0, scl: float = 1.0, parent: Node3D = null) -> Node3D:
+	var node := ModelLoader.instantiate_glb(res_path)
+	if node == null:
+		return null
+	node.position = pos
+	node.rotation_degrees.y = rot_y_deg
+	node.scale = Vector3.ONE * scl
+	var target_parent: Node3D = parent if parent != null else _env_root
+	target_parent.add_child(node)
+	return node
+
 func _build_fences() -> void:
-	var wood_mat := PbrAssets.get_pbr_material("wood", Vector3(1.0, 2.0, 1.0), Color(0.84, 0.74, 0.62))
 	for side: float in [-1.0, 1.0]:
 		var x: float = side * 9.5
-		for i in range(14):
-			var z: float = -8.0 - float(i) * 4.8
-			var post := MeshInstance3D.new()
-			var pm := BoxMesh.new()
-			pm.size = Vector3(0.18, 1.25, 0.18)
-			post.mesh = pm
-			post.position = Vector3(x, 0.62, z)
-			post.material_override = wood_mat
-			_env_root.add_child(post)
-			for ry: float in [0.42, 0.96]:
-				var rail := MeshInstance3D.new()
-				var rm := BoxMesh.new()
-				rm.size = Vector3(0.10, 0.12, 4.8)
-				rail.mesh = rm
-				rail.position = Vector3(x, ry, z - 2.4)
-				rail.material_override = wood_mat
-				_env_root.add_child(rail)
+		for i in range(18):
+			var z: float = -6.0 - float(i) * 3.6
+			_place_glb("res://assets/models/fence.glb", Vector3(x, 0.0, z), 90.0, 3.6)
 
 func _build_wind_flags() -> void:
 	var wood_mat := PbrAssets.get_pbr_material("wood", Vector3(1.0, 2.0, 1.0), Color(0.86, 0.76, 0.64))
@@ -390,57 +397,27 @@ func _build_castle(pos: Vector3) -> void:
 	var root := Node3D.new()
 	root.position = pos
 	_env_root.add_child(root)
+	var s := 6.5
 
-	var stone_mat := PbrAssets.get_pbr_material("stone", Vector3(5.0, 2.5, 1.0), Color(0.88, 0.85, 0.80))
+	# Central medieval stone gatehouse
+	_place_glb("res://assets/models/castle_gate.glb", Vector3(0.0, 0.0, 0.0), 0.0, s, root)
 
-	var roof_mat := StandardMaterial3D.new()
-	roof_mat.albedo_color = Color(0.66, 0.22, 0.18)
-	roof_mat.roughness = 0.78
+	# Flanking curtain walls
+	for wx: float in [-1.0, 1.0, -2.0, 2.0, -3.0, 3.0]:
+		_place_glb("res://assets/models/castle_wall.glb", Vector3(wx * s, 0.0, 0.0), 0.0, s, root)
 
-	# Main curtain wall
-	var wall := MeshInstance3D.new()
-	var wm := BoxMesh.new()
-	wm.size = Vector3(32.0, 10.5, 4.0)
-	wall.mesh = wm
-	wall.position = Vector3(0.0, 5.25, 0.0)
-	wall.material_override = stone_mat
-	root.add_child(wall)
+	# 2 tall inner square towers with high medieval roofs
+	for tx: float in [-1.25 * s, 1.25 * s]:
+		_place_glb("res://assets/models/castle_tower_base.glb", Vector3(tx, 0.0, 0.4), 0.0, s, root)
+		_place_glb("res://assets/models/castle_sq_mid.glb", Vector3(tx, s * 0.95, 0.4), 0.0, s, root)
+		_place_glb("res://assets/models/castle_sq_mid.glb", Vector3(tx, s * 1.90, 0.4), 0.0, s, root)
+		_place_glb("res://assets/models/castle_sq_roof.glb", Vector3(tx, s * 2.85, 0.4), 0.0, s, root)
 
-	# Arched dark gate
-	var gate := MeshInstance3D.new()
-	var gm := BoxMesh.new()
-	gm.size = Vector3(4.6, 6.2, 4.3)
-	gate.mesh = gm
-	gate.position = Vector3(0.0, 3.1, 0.0)
-	var gmat := StandardMaterial3D.new()
-	gmat.albedo_color = Color(0.24, 0.16, 0.10)
-	gate.material_override = gmat
-	root.add_child(gate)
-
-	# 4 medieval stone towers with conical roofs
-	for tx: float in [-15.0, -5.5, 5.5, 15.0]:
-		var h: float = 16.5 if absf(tx) < 10.0 else 14.0
-		var tower := MeshInstance3D.new()
-		var tm := CylinderMesh.new()
-		tm.top_radius = 2.6
-		tm.bottom_radius = 2.8
-		tm.height = h
-		tm.radial_segments = 14
-		tower.mesh = tm
-		tower.position = Vector3(tx, h * 0.5, 0.8)
-		tower.material_override = stone_mat
-		root.add_child(tower)
-
-		var spire := MeshInstance3D.new()
-		var sm := CylinderMesh.new()
-		sm.top_radius = 0.05
-		sm.bottom_radius = 3.0
-		sm.height = 4.6
-		sm.radial_segments = 14
-		spire.mesh = sm
-		spire.position = Vector3(tx, h + 2.3, 0.8)
-		spire.material_override = roof_mat
-		root.add_child(spire)
+	# 2 outer hexagonal stone towers with pointed roofs
+	for tx: float in [-3.3 * s, 3.3 * s]:
+		_place_glb("res://assets/models/castle_tower_base.glb", Vector3(tx, 0.0, 0.5), 0.0, s, root)
+		_place_glb("res://assets/models/castle_tower_mid.glb", Vector3(tx, s * 0.95, 0.5), 0.0, s, root)
+		_place_glb("res://assets/models/castle_tower_roof.glb", Vector3(tx, s * 1.90, 0.5), 0.0, s, root)
 
 func _build_windmill(pos: Vector3) -> void:
 	var root := Node3D.new()
@@ -470,37 +447,18 @@ func _build_windmill(pos: Vector3) -> void:
 		blade.material_override = wood_mat
 		_windmill_blades.add_child(blade)
 
-func _build_trees(count: int, tint: Color) -> void:
+func _build_trees(count: int, _tint: Color) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 77
-	var trunk_mat := StandardMaterial3D.new()
-	trunk_mat.albedo_texture = ProcTex.get_wood_texture()
-	var leaf_mat := StandardMaterial3D.new()
-	leaf_mat.albedo_color = Color(0.14, 0.34, 0.14) * tint
 	for i in range(count):
-		var side := -1.0 if (i % 2 == 0) else 1.0
-		var tx := side * rng.randf_range(11.0, 26.0)
-		var tz := -rng.randf_range(14.0, 72.0)
-		var trunk := MeshInstance3D.new()
-		var tm := CylinderMesh.new()
-		tm.top_radius = 0.22
-		tm.bottom_radius = 0.32
-		tm.height = 3.2
-		trunk.mesh = tm
-		trunk.position = Vector3(tx, 1.6, tz)
-		trunk.material_override = trunk_mat
-		_env_root.add_child(trunk)
-
-		var crown := MeshInstance3D.new()
-		var cm := CylinderMesh.new()
-		cm.top_radius = 0.05
-		cm.bottom_radius = 2.1
-		cm.height = 5.4
-		crown.mesh = cm
-		crown.position = Vector3(tx, 5.2, tz)
-		crown.material_override = leaf_mat
-		_env_root.add_child(crown)
-
+		var side: float = -1.0 if (i % 2 == 0) else 1.0
+		var tx: float = side * rng.randf_range(11.5, 28.0)
+		var tz: float = -rng.randf_range(12.0, 74.0)
+		var model_path := "res://assets/models/tree_pine.glb" if (i % 3 != 0) else "res://assets/models/tree_oak.glb"
+		var scl: float = rng.randf_range(3.2, 5.2)
+		_place_glb(model_path, Vector3(tx, 0.0, tz), rng.randf_range(0.0, 360.0), scl)
+		if i % 4 == 0:
+			_place_glb("res://assets/models/rock_large.glb", Vector3(tx + side * 2.2, 0.0, tz + 1.8), rng.randf_range(0.0, 360.0), 2.2)
 func _build_torch(pos: Vector3) -> void:
 	var pole := MeshInstance3D.new()
 	var pm := CylinderMesh.new()
