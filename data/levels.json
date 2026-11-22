@@ -1,0 +1,901 @@
+{
+  "version": 1,
+  "levels": [
+    {
+      "id": 1,
+      "biome": "village",
+      "distance_m": 15,
+      "wind_min": 0.0,
+      "wind_max": 0.0,
+      "wind_gusty": false,
+      "arrows": 6,
+      "target_score": 150,
+      "star2_score": 250,
+      "star3_score": 380,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "static",
+          "x": 0.0,
+          "y": 1.6,
+          "z": -15.0,
+          "radius": 0.85,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "biome": "village",
+      "distance_m": 20,
+      "wind_min": 0.0,
+      "wind_max": 0.0,
+      "wind_gusty": false,
+      "arrows": 6,
+      "target_score": 220,
+      "star2_score": 320,
+      "star3_score": 430,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "static",
+          "x": -2.2,
+          "y": 1.5,
+          "z": -19.0,
+          "radius": 0.8,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "static",
+          "x": 2.4,
+          "y": 2.4,
+          "z": -21.0,
+          "radius": 0.8,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "biome": "village",
+      "distance_m": 25,
+      "wind_min": 1.0,
+      "wind_max": 2.0,
+      "wind_gusty": false,
+      "arrows": 6,
+      "target_score": 260,
+      "star2_score": 360,
+      "star3_score": 460,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "static",
+          "x": -3.0,
+          "y": 1.6,
+          "z": -23.0,
+          "radius": 0.85,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "static",
+          "x": 0.0,
+          "y": 1.9,
+          "z": -25.0,
+          "radius": 0.72,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "static",
+          "x": 3.2,
+          "y": 1.6,
+          "z": -26.0,
+          "radius": 0.65,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "biome": "village",
+      "distance_m": 30,
+      "wind_min": 1.5,
+      "wind_max": 2.2,
+      "wind_gusty": false,
+      "arrows": 6,
+      "target_score": 300,
+      "star2_score": 400,
+      "star3_score": 500,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "static",
+          "x": -2.8,
+          "y": 1.7,
+          "z": -29.0,
+          "radius": 0.75,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "barrel_bonus",
+          "x": 0.0,
+          "y": 1.1,
+          "z": -27.0,
+          "radius": 0.55,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "static",
+          "x": 2.8,
+          "y": 1.9,
+          "z": -31.0,
+          "radius": 0.75,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "biome": "village",
+      "distance_m": 35,
+      "wind_min": 2.0,
+      "wind_max": 3.0,
+      "wind_gusty": false,
+      "arrows": 7,
+      "target_score": 360,
+      "star2_score": 470,
+      "star3_score": 580,
+      "time_limit_sec": 0,
+      "is_biome_boss": true,
+      "targets": [
+        {
+          "type": "static",
+          "x": -3.6,
+          "y": 1.7,
+          "z": -33.0,
+          "radius": 0.75,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "rail",
+          "x": 0.0,
+          "y": 1.8,
+          "z": -35.0,
+          "radius": 0.75,
+          "speed": 0.9,
+          "amplitude": 2.6
+        },
+        {
+          "type": "static",
+          "x": 3.6,
+          "y": 1.7,
+          "z": -33.0,
+          "radius": 0.75,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "biome": "tournament",
+      "distance_m": 30,
+      "wind_min": 2.5,
+      "wind_max": 3.2,
+      "wind_gusty": false,
+      "arrows": 7,
+      "target_score": 380,
+      "star2_score": 490,
+      "star3_score": 600,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "rail",
+          "x": -2.0,
+          "y": 1.7,
+          "z": -29.0,
+          "radius": 0.75,
+          "speed": 1.0,
+          "amplitude": 2.2
+        },
+        {
+          "type": "rail",
+          "x": 2.0,
+          "y": 2.2,
+          "z": -32.0,
+          "radius": 0.72,
+          "speed": 1.15,
+          "amplitude": 2.4
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "biome": "tournament",
+      "distance_m": 35,
+      "wind_min": 3.0,
+      "wind_max": 4.0,
+      "wind_gusty": false,
+      "arrows": 7,
+      "target_score": 420,
+      "star2_score": 530,
+      "star3_score": 640,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "static",
+          "x": -4.0,
+          "y": 1.6,
+          "z": -32.0,
+          "radius": 0.75,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "pendulum",
+          "x": 0.0,
+          "y": 2.6,
+          "z": -35.0,
+          "radius": 0.72,
+          "speed": 1.3,
+          "amplitude": 2.4
+        },
+        {
+          "type": "static",
+          "x": 4.0,
+          "y": 1.6,
+          "z": -34.0,
+          "radius": 0.75,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "biome": "tournament",
+      "distance_m": 40,
+      "wind_min": 3.0,
+      "wind_max": 4.2,
+      "wind_gusty": true,
+      "arrows": 7,
+      "target_score": 450,
+      "star2_score": 560,
+      "star3_score": 670,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "rail",
+          "x": 0.0,
+          "y": 1.8,
+          "z": -40.0,
+          "radius": 0.75,
+          "speed": 1.2,
+          "amplitude": 3.0
+        },
+        {
+          "type": "shield_penalty",
+          "x": 0.0,
+          "y": 1.8,
+          "z": -37.0,
+          "radius": 0.65,
+          "speed": 1.6,
+          "amplitude": 2.6
+        },
+        {
+          "type": "static",
+          "x": 3.8,
+          "y": 2.0,
+          "z": -39.0,
+          "radius": 0.7,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "biome": "tournament",
+      "distance_m": 45,
+      "wind_min": 4.0,
+      "wind_max": 5.0,
+      "wind_gusty": true,
+      "arrows": 8,
+      "target_score": 500,
+      "star2_score": 630,
+      "star3_score": 760,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "rail",
+          "x": 0.0,
+          "y": 1.6,
+          "z": -43.0,
+          "radius": 0.75,
+          "speed": 1.35,
+          "amplitude": 3.5
+        },
+        {
+          "type": "rail",
+          "x": 0.0,
+          "y": 2.8,
+          "z": -46.0,
+          "radius": 0.72,
+          "speed": -1.45,
+          "amplitude": 3.5
+        },
+        {
+          "type": "barrel_bonus",
+          "x": -3.5,
+          "y": 1.2,
+          "z": -42.0,
+          "radius": 0.55,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "biome": "tournament",
+      "distance_m": 50,
+      "wind_min": 4.5,
+      "wind_max": 5.5,
+      "wind_gusty": true,
+      "arrows": 8,
+      "target_score": 550,
+      "star2_score": 680,
+      "star3_score": 810,
+      "time_limit_sec": 60,
+      "is_biome_boss": true,
+      "targets": [
+        {
+          "type": "static",
+          "x": -4.5,
+          "y": 1.7,
+          "z": -47.0,
+          "radius": 0.72,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "rail",
+          "x": -1.5,
+          "y": 2.0,
+          "z": -50.0,
+          "radius": 0.72,
+          "speed": 1.4,
+          "amplitude": 2.4
+        },
+        {
+          "type": "pendulum",
+          "x": 1.8,
+          "y": 2.8,
+          "z": -50.0,
+          "radius": 0.7,
+          "speed": 1.5,
+          "amplitude": 2.2
+        },
+        {
+          "type": "static",
+          "x": 4.6,
+          "y": 1.8,
+          "z": -48.0,
+          "radius": 0.72,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "barrel_bonus",
+          "x": 0.0,
+          "y": 1.2,
+          "z": -45.0,
+          "radius": 0.52,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "biome": "forest",
+      "distance_m": 35,
+      "wind_min": 3.5,
+      "wind_max": 4.5,
+      "wind_gusty": true,
+      "arrows": 7,
+      "target_score": 480,
+      "star2_score": 590,
+      "star3_score": 700,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "static",
+          "x": -3.2,
+          "y": 1.8,
+          "z": -34.0,
+          "radius": 0.7,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "static",
+          "x": 0.4,
+          "y": 2.1,
+          "z": -36.0,
+          "radius": 0.68,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "static",
+          "x": 3.5,
+          "y": 1.7,
+          "z": -35.0,
+          "radius": 0.7,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "biome": "forest",
+      "distance_m": 40,
+      "wind_min": 4.5,
+      "wind_max": 5.5,
+      "wind_gusty": true,
+      "arrows": 8,
+      "target_score": 520,
+      "star2_score": 640,
+      "star3_score": 760,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "popup",
+          "x": -3.0,
+          "y": 1.7,
+          "z": -39.0,
+          "radius": 0.72,
+          "speed": 0.25,
+          "amplitude": 1.6
+        },
+        {
+          "type": "popup",
+          "x": 0.0,
+          "y": 1.8,
+          "z": -41.0,
+          "radius": 0.72,
+          "speed": 0.3,
+          "amplitude": 1.6
+        },
+        {
+          "type": "popup",
+          "x": 3.2,
+          "y": 1.7,
+          "z": -40.0,
+          "radius": 0.72,
+          "speed": 0.22,
+          "amplitude": 1.6
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "biome": "forest",
+      "distance_m": 45,
+      "wind_min": 5.0,
+      "wind_max": 6.0,
+      "wind_gusty": true,
+      "arrows": 8,
+      "target_score": 560,
+      "star2_score": 680,
+      "star3_score": 800,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "pendulum",
+          "x": -1.5,
+          "y": 2.8,
+          "z": -45.0,
+          "radius": 0.7,
+          "speed": 1.5,
+          "amplitude": 2.8
+        },
+        {
+          "type": "shield_penalty",
+          "x": -1.5,
+          "y": 2.0,
+          "z": -41.0,
+          "radius": 0.6,
+          "speed": 1.3,
+          "amplitude": 2.2
+        },
+        {
+          "type": "rail",
+          "x": 2.8,
+          "y": 1.8,
+          "z": -44.0,
+          "radius": 0.7,
+          "speed": 1.3,
+          "amplitude": 2.0
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "biome": "forest",
+      "distance_m": 50,
+      "wind_min": 5.5,
+      "wind_max": 6.5,
+      "wind_gusty": true,
+      "arrows": 8,
+      "target_score": 600,
+      "star2_score": 730,
+      "star3_score": 860,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "rail",
+          "x": -2.5,
+          "y": 2.0,
+          "z": -49.0,
+          "radius": 0.68,
+          "speed": 1.55,
+          "amplitude": 2.6
+        },
+        {
+          "type": "pendulum",
+          "x": 2.5,
+          "y": 2.9,
+          "z": -51.0,
+          "radius": 0.68,
+          "speed": 1.65,
+          "amplitude": 2.6
+        },
+        {
+          "type": "popup",
+          "x": 0.0,
+          "y": 1.6,
+          "z": -47.0,
+          "radius": 0.65,
+          "speed": 0.35,
+          "amplitude": 1.5
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "biome": "forest",
+      "distance_m": 55,
+      "wind_min": 6.0,
+      "wind_max": 7.0,
+      "wind_gusty": true,
+      "arrows": 9,
+      "target_score": 650,
+      "star2_score": 790,
+      "star3_score": 930,
+      "time_limit_sec": 65,
+      "is_biome_boss": true,
+      "targets": [
+        {
+          "type": "popup",
+          "x": -3.5,
+          "y": 1.8,
+          "z": -52.0,
+          "radius": 0.68,
+          "speed": 0.38,
+          "amplitude": 1.6
+        },
+        {
+          "type": "popup",
+          "x": 3.5,
+          "y": 1.8,
+          "z": -53.0,
+          "radius": 0.68,
+          "speed": 0.42,
+          "amplitude": 1.6
+        },
+        {
+          "type": "static",
+          "x": 0.0,
+          "y": 2.4,
+          "z": -56.0,
+          "radius": 0.65,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "barrel_bonus",
+          "x": 0.0,
+          "y": 1.2,
+          "z": -50.0,
+          "radius": 0.5,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "biome": "fortress",
+      "distance_m": 45,
+      "wind_min": 5.5,
+      "wind_max": 6.5,
+      "wind_gusty": false,
+      "arrows": 8,
+      "target_score": 620,
+      "star2_score": 750,
+      "star3_score": 880,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "static",
+          "x": -3.5,
+          "y": 2.4,
+          "z": -45.0,
+          "radius": 0.7,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "static",
+          "x": 0.0,
+          "y": 3.0,
+          "z": -46.0,
+          "radius": 0.68,
+          "speed": 0.0,
+          "amplitude": 0.0
+        },
+        {
+          "type": "static",
+          "x": 3.5,
+          "y": 2.4,
+          "z": -45.0,
+          "radius": 0.7,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "biome": "fortress",
+      "distance_m": 50,
+      "wind_min": 6.5,
+      "wind_max": 7.5,
+      "wind_gusty": true,
+      "arrows": 8,
+      "target_score": 660,
+      "star2_score": 800,
+      "star3_score": 940,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "rail",
+          "x": -2.0,
+          "y": 2.5,
+          "z": -50.0,
+          "radius": 0.68,
+          "speed": 1.6,
+          "amplitude": 2.8
+        },
+        {
+          "type": "rail",
+          "x": 2.0,
+          "y": 2.5,
+          "z": -51.0,
+          "radius": 0.68,
+          "speed": -1.7,
+          "amplitude": 2.8
+        },
+        {
+          "type": "shield_penalty",
+          "x": 0.0,
+          "y": 2.4,
+          "z": -46.0,
+          "radius": 0.62,
+          "speed": 1.8,
+          "amplitude": 3.2
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "biome": "fortress",
+      "distance_m": 55,
+      "wind_min": 7.0,
+      "wind_max": 8.0,
+      "wind_gusty": true,
+      "arrows": 9,
+      "target_score": 720,
+      "star2_score": 860,
+      "star3_score": 1000,
+      "time_limit_sec": 0,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "pendulum",
+          "x": -2.8,
+          "y": 3.2,
+          "z": -55.0,
+          "radius": 0.64,
+          "speed": 1.75,
+          "amplitude": 2.6
+        },
+        {
+          "type": "pendulum",
+          "x": 2.8,
+          "y": 3.2,
+          "z": -55.0,
+          "radius": 0.64,
+          "speed": -1.75,
+          "amplitude": 2.6
+        },
+        {
+          "type": "shield_penalty",
+          "x": 0.0,
+          "y": 2.6,
+          "z": -51.0,
+          "radius": 0.62,
+          "speed": 2.0,
+          "amplitude": 3.4
+        },
+        {
+          "type": "barrel_bonus",
+          "x": 0.0,
+          "y": 1.5,
+          "z": -53.0,
+          "radius": 0.5,
+          "speed": 0.0,
+          "amplitude": 0.0
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "biome": "fortress",
+      "distance_m": 60,
+      "wind_min": 7.5,
+      "wind_max": 8.5,
+      "wind_gusty": true,
+      "arrows": 9,
+      "target_score": 780,
+      "star2_score": 920,
+      "star3_score": 1060,
+      "time_limit_sec": 60,
+      "is_biome_boss": false,
+      "targets": [
+        {
+          "type": "rail",
+          "x": 0.0,
+          "y": 2.0,
+          "z": -58.0,
+          "radius": 0.66,
+          "speed": 1.85,
+          "amplitude": 4.0
+        },
+        {
+          "type": "rail",
+          "x": 0.0,
+          "y": 3.6,
+          "z": -61.0,
+          "radius": 0.64,
+          "speed": -1.95,
+          "amplitude": 4.0
+        },
+        {
+          "type": "pendulum",
+          "x": -3.5,
+          "y": 3.2,
+          "z": -59.0,
+          "radius": 0.64,
+          "speed": 1.8,
+          "amplitude": 2.2
+        },
+        {
+          "type": "popup",
+          "x": 3.5,
+          "y": 2.2,
+          "z": -57.0,
+          "radius": 0.64,
+          "speed": 0.45,
+          "amplitude": 1.6
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "biome": "fortress",
+      "distance_m": 68,
+      "wind_min": 8.0,
+      "wind_max": 9.0,
+      "wind_gusty": true,
+      "arrows": 10,
+      "target_score": 900,
+      "star2_score": 1080,
+      "star3_score": 1260,
+      "time_limit_sec": 70,
+      "is_biome_boss": true,
+      "targets": [
+        {
+          "type": "rail",
+          "x": -2.5,
+          "y": 2.2,
+          "z": -64.0,
+          "radius": 0.66,
+          "speed": 1.9,
+          "amplitude": 3.2
+        },
+        {
+          "type": "rail",
+          "x": 2.5,
+          "y": 3.6,
+          "z": -68.0,
+          "radius": 0.64,
+          "speed": -2.0,
+          "amplitude": 3.2
+        },
+        {
+          "type": "pendulum",
+          "x": 0.0,
+          "y": 3.8,
+          "z": -70.0,
+          "radius": 0.62,
+          "speed": 1.9,
+          "amplitude": 3.0
+        },
+        {
+          "type": "popup",
+          "x": -4.2,
+          "y": 2.0,
+          "z": -62.0,
+          "radius": 0.62,
+          "speed": 0.48,
+          "amplitude": 1.6
+        },
+        {
+          "type": "popup",
+          "x": 4.2,
+          "y": 2.0,
+          "z": -62.0,
+          "radius": 0.62,
+          "speed": 0.44,
+          "amplitude": 1.6
+        },
+        {
+          "type": "shield_penalty",
+          "x": 0.0,
+          "y": 2.4,
+          "z": -60.0,
+          "radius": 0.62,
+          "speed": 2.1,
+          "amplitude": 3.8
+        }
+      ]
+    }
+  ]
+}

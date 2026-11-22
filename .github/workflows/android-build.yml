@@ -1,0 +1,158 @@
+name: Build Android (Free & Paid) + Web Demo
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*.*.*' ]
+  workflow_dispatch:
+    inputs:
+      build_release:
+        description: 'Build signed Release AABs (requires GitHub Secrets)'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-debug-apk:
+    name: Debug APK (Free & Paid)
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare Godot export templates & debug keystore
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates
+          mkdir -p builds
+          if [ -d /root/.local/share/godot/export_templates ]; then
+            cp -rn /root/.local/share/godot/export_templates/* ~/.local/share/godot/export_templates/ || true
+          fi
+          if [ ! -f /root/debug.keystore ]; then
+            keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android               -keystore /root/debug.keystore -storepass android               -dname "CN=Android Debug,O=Android,C=US" -validity 9999 -deststoretype pkcs12
+          fi
+
+      - name: Pre-heat project (.godot import cache)
+        run: godot --headless --import --quit || true
+
+      - name: Export Android Free Debug APK
+        run: godot --headless --verbose --export-debug "Android Free Debug" builds/medieval_archery_free_debug.apk
+
+      - name: Export Android Paid Debug APK
+        run: godot --headless --verbose --export-debug "Android Paid Debug" builds/medieval_archery_paid_debug.apk
+
+      - name: Upload Debug APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apks
+          path: |
+            builds/medieval_archery_free_debug.apk
+            builds/medieval_archery_paid_debug.apk
+          retention-days: 14
+
+  build-web:
+    name: Build Web Demo (HTML5)
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare Godot export templates
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates
+          mkdir -p builds/web
+          if [ -d /root/.local/share/godot/export_templates ]; then
+            cp -rn /root/.local/share/godot/export_templates/* ~/.local/share/godot/export_templates/ || true
+          fi
+
+      - name: Pre-heat project (.godot import cache)
+        run: godot --headless --import --quit || true
+
+      - name: Export Web (single-threaded for GitHub Pages)
+        run: godot --headless --verbose --export-release "Web" builds/web/index.html
+
+      - name: Upload Web build artifact for Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: builds/web
+
+  deploy-pages:
+    name: Deploy Web Demo to GitHub Pages
+    needs: build-web
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  build-release-aab:
+    name: Signed Release AAB (Free & Paid)
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.build_release == true
+    container:
+      image: barichello/godot-ci:4.3
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Decode Release Keystore from Secrets
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+          KEYSTORE_USER: ${{ secrets.ANDROID_RELEASE_KEYSTORE_USER }}
+          KEYSTORE_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ] || [ -z "$KEYSTORE_USER" ] || [ -z "$KEYSTORE_PASS" ]; then
+            echo "::error::Missing Android signing secrets (ANDROID_RELEASE_KEYSTORE_BASE64, ANDROID_RELEASE_KEYSTORE_USER, ANDROID_RELEASE_KEYSTORE_PASSWORD)."
+            exit 1
+          fi
+          mkdir -p builds
+          echo "$KEYSTORE_B64" | base64 --decode > /tmp/release.keystore
+          sed -i "s|keystore/release=""|keystore/release="/tmp/release.keystore"|g" export_presets.cfg
+          sed -i "s|keystore/release_user=""|keystore/release_user="${KEYSTORE_USER}"|g" export_presets.cfg
+          sed -i "s|keystore/release_password=""|keystore/release_password="${KEYSTORE_PASS}"|g" export_presets.cfg
+
+      - name: Pre-heat project (.godot import cache)
+        run: godot --headless --import --quit || true
+
+      - name: Export Android Free Release AAB
+        run: godot --headless --verbose --export-release "Android Free Release" builds/medieval_archery_free_release.aab
+
+      - name: Export Android Paid Release AAB
+        run: godot --headless --verbose --export-release "Android Paid Release" builds/medieval_archery_paid_release.aab
+
+      - name: Clean up temporary keystore
+        if: always()
+        run: rm -f /tmp/release.keystore
+
+      - name: Upload Release AABs
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-aabs
+          path: |
+            builds/medieval_archery_free_release.aab
+            builds/medieval_archery_paid_release.aab
+          retention-days: 30
+
+      - name: Attach AABs to GitHub Release (on tag push)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            builds/medieval_archery_free_release.aab
+            builds/medieval_archery_paid_release.aab

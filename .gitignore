@@ -1,0 +1,22 @@
+# Godot 4 local cache & editor metadata
+.godot/
+.import/
+*.translation
+
+# Build outputs
+builds/
+*.apk
+*.aab
+
+# Signing keys & local secrets (NEVER commit!)
+*.keystore
+*.jks
+*.p12
+.env
+.env.local
+
+# OS & IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,58 @@
+key,en,ru
+app_title,Medieval Archery Range 3D,Средневековый тир из лука 3D
+edition_free,FREE EDITION,БЕСПЛАТНАЯ ВЕРСИЯ
+edition_paid,PRO EDITION (UNLIMITED),ПОЛНАЯ ВЕРСИЯ (БЕЗ ЛИМИТОВ)
+btn_play,Play,Играть
+btn_levels,20 Levels,20 уровней
+btn_help,Help & Rules,Справка и правила
+btn_settings,Settings,Настройки
+btn_back,Back,Назад
+btn_resume,Resume,Продолжить
+btn_retry,Retry,Повторить
+btn_next_level,Next Level,Следующий уровень
+btn_main_menu,Main Menu,Главное меню
+btn_cancel_shot,Cancel Shot,Сбросить натяжение
+hud_level_score,LVL {level} | {score} / {target},УР. {level} | {score} / {target}
+hud_wind,Wind: {speed} m/s,Ветер: {speed} м/с
+hud_arrows,Arrows: {left} / {total},Стрелы: {left} / {total}
+hud_timer,Time: {sec}s,Время: {sec} с
+hud_combo,Combo x{mult},Серия x{mult}
+attempts_badge,Daily Attempts: {left} / {base},Попытки на сегодня: {left} / {base}
+attempts_unlimited,Unlimited Attempts (Pro),Безлимитные попытки (Pro)
+attempts_exhausted_title,No Attempts Left Today,Попытки на сегодня закончились
+attempts_exhausted_body,Your 10 daily attempts refresh at 06:00 local time. Upgrade to the Pro edition for unlimited play.,Ваши 10 ежедневных попыток обновятся в 06:00 по местному времени. Полная версия снимает ограничения навсегда.
+biome_village,Village Courtyard,Учебный двор деревни
+biome_tournament,Royal Tournament,Королевский турнир
+biome_forest,Dusk Forest,Лесной рубеж
+biome_fortress,Night Fortress,Ночная крепость
+result_win,LEVEL COMPLETE!,УРОВЕНЬ ПРОЙДЕН!
+result_fail,LEVEL FAILED,УРОВЕНЬ НЕ ПРОЙДЕН
+result_score,Score: {score} (Target: {target}),Очки: {score} (Нужно: {target})
+result_stars,Stars earned: {stars} / 3,Звёзды: {stars} / 3
+bonus_perfect,+1 Bonus Attempt: Perfect Shot!,+1 бонусная попытка: Идеальный выстрел!
+bonus_economy,+1 Bonus Attempt: Sniper Economy!,+1 бонусная попытка: Снайперская экономия!
+bonus_boss,+2 Bonus Attempts: Biome Conquered!,+2 бонусные попытки: Биом покорён!
+hit_bullseye,BULLSEYE! +{pts},ЯБЛОЧКО! +{pts}
+hit_ring,HIT +{pts},ПОПАДАНИЕ +{pts}
+hit_barrel,BONUS BARREL! +{pts},БОНУСНАЯ БОЧКА! +{pts}
+hit_penalty,SHIELD PENALTY! {pts},ШТРАФ ЗА ЩИТ! {pts}
+settings_title,Settings,Настройки
+settings_language,Interface Language,Язык интерфейса
+settings_sound,Sound Effects (SFX),Звуковые эффекты
+settings_music,Ambient Audio,Фоновый звук
+settings_haptics,Vibration (Haptics),Вибрация (Haptics)
+settings_gyro,Gyroscope Micro-Aim,Микро-доводка гироскопом
+settings_sensitivity,Aim Sensitivity,Чувствительность прицела
+settings_quality,Graphics Quality,Качество графики
+quality_low,Low,Низкое
+quality_medium,Medium,Среднее
+quality_high,High,Высокое
+help_title,How to Play,Как играть
+help_controls_title,1. Controls & Shooting,1. Управление и стрельба
+help_controls_body,"Press and hold anywhere on the screen to draw the bowstring. Drag your finger to aim, then release to fire. Tap 'Cancel Shot' to relax the bow without spending an arrow. Holding full draw longer than 3.5 seconds causes hand sway.","Удерживайте палец на экране, чтобы натянуть тетиву. Двигайте пальцем для прицеливания и отпустите для выстрела. Кнопка «Сбросить натяжение» отменяет выстрел без траты стрелы. Переудержание тетивы дольше 3,5 секунд вызывает покачивание рук."
+help_ballistics_title,2. Gravity & Wind,2. Гравитация и ветер
+help_ballistics_body,Arrows follow a realistic arc. Aim slightly above distant targets and compensate for crosswind shown on the top wind indicator and fluttering banners.,Стрелы летят по параболе. На дальних дистанциях берите упреждение выше цели и учитывайте боковой ветер по верхнему индикатору и колыханию флагов.
+help_scoring_title,3. Scoring & Stars,3. Очки и звёзды
+help_scoring_body,"Bullseye = 100 pts, Inner = 60, Middle = 30, Outer = 10. Consecutive hits build a Combo multiplier (up to x3). Avoid red penalty shields (-50 pts). Unused arrows award bonus points.","Яблочко = 100 оч., внутреннее кольцо = 60, среднее = 30, внешнее = 10. Серия попаданий даёт множитель до x3. Избегайте штрафных щитов (-50 оч.). Оставшиеся стрелы добавляют бонусные очки."
+help_attempts_title,4. Daily Attempts (Free Edition),4. Дневные попытки (Бесплатная версия)
+help_attempts_body,"You start with 10 attempts every morning at 06:00. Winning a level NEVER spends an attempt — only failing does. Earn up to +3 daily bonus attempts for 3-star wins, 3 bullseyes in a row, or finishing with 2+ arrows left, plus +2 one-time attempts for beating each biome boss (levels 5, 10, 15, 20). The Paid edition removes all limits.","Каждое утро в 06:00 обновляются 10 попыток. Победа НЕ тратит попытку — списываются только проигрыши. Можно получить до +3 бонусных попыток в день (за 3 звезды, 3 яблочка подряд или победу с запасом 2+ стрел), а также разово +2 попытки за босса каждого биома (уровни 5, 10, 15, 20). В платной версии лимита нет."
