@@ -199,21 +199,56 @@ func _process(delta: float) -> void:
 		"shield_penalty":
 			position.x = base_pos.x + sin(_time * move_speed) * amplitude
 
-func evaluate_hit(world_hit_pos: Vector3) -> Dictionary:
-	if target_type == "barrel_bonus":
-		return {"hit": true, "points": 75, "kind": "barrel", "bullseye": false}
-	if target_type == "shield_penalty":
-		return {"hit": true, "points": -50, "kind": "penalty", "bullseye": false}
+func _spawn_hit_burst(local_hit: Vector3, is_bullseye: bool) -> void:
+	var burst := CPUParticles3D.new()
+	burst.one_shot = true
+	burst.explosiveness = 0.95
+	burst.amount = 18 if is_bullseye else 10
+	burst.lifetime = 0.45
+	burst.direction = Vector3(0.0, 0.3, 1.0)
+	burst.spread = 55.0
+	burst.initial_velocity_min = 2.0
+	burst.initial_velocity_max = 5.0
+	burst.position = local_hit + Vector3(0.0, 0.0, 0.08)
+	var pm := SphereMesh.new()
+	pm.radius = 0.035 if is_bullseye else 0.025
+	pm.height = 0.07 if is_bullseye else 0.05
+	var pmat := StandardMaterial3D.new()
+	pmat.albedo_color = Color(1.0, 0.88, 0.20) if is_bullseye else Color(1.0, 0.96, 0.86)
+	pmat.emission_enabled = true
+	pmat.emission = pmat.albedo_color
+	pmat.emission_energy_multiplier = 2.5
+	pm.material = pmat
+	burst.mesh = pm
+	_pivot.add_child(burst)
+	burst.emitting = true
+	get_tree().create_timer(0.6).timeout.connect(func():
+		if is_instance_valid(burst):
+			burst.queue_free()
+	)
 
+func evaluate_hit(world_hit_pos: Vector3) -> Dictionary:
 	var local_pos := _pivot.to_local(world_hit_pos)
-	var dist := Vector2(local_pos.x, local_pos.y).length()
-	var norm: float = dist / maxf(radius, 0.01)
+	if target_type == "barrel_bonus":
+		_spawn_hit_burst(local_pos, true)
+		return {"hit": true, "points": 75, "kind": "barrel", "bullseye": false, "norm_pos": Vector2.ZERO}
+	if target_type == "shield_penalty":
+		_spawn_hit_burst(local_pos, false)
+		return {"hit": true, "points": -50, "kind": "penalty", "bullseye": false, "norm_pos": Vector2.ZERO}
+
+	var safe_r: float = maxf(radius, 0.01)
+	var norm_vec := Vector2(local_pos.x / safe_r, -local_pos.y / safe_r)
+	var norm: float = norm_vec.length()
 
 	if norm <= 0.28:
-		return {"hit": true, "points": 100, "kind": "bullseye", "bullseye": true}
+		_spawn_hit_burst(local_pos, true)
+		return {"hit": true, "points": 100, "kind": "bullseye", "bullseye": true, "norm_pos": norm_vec}
 	elif norm <= 0.50:
-		return {"hit": true, "points": 60, "kind": "ring", "bullseye": false}
+		_spawn_hit_burst(local_pos, false)
+		return {"hit": true, "points": 60, "kind": "ring", "bullseye": false, "norm_pos": norm_vec}
 	elif norm <= 0.74:
-		return {"hit": true, "points": 30, "kind": "ring", "bullseye": false}
+		_spawn_hit_burst(local_pos, false)
+		return {"hit": true, "points": 30, "kind": "ring", "bullseye": false, "norm_pos": norm_vec}
 	else:
-		return {"hit": true, "points": 10, "kind": "ring", "bullseye": false}
+		_spawn_hit_burst(local_pos, false)
+		return {"hit": true, "points": 10, "kind": "ring", "bullseye": false, "norm_pos": norm_vec}

@@ -7,8 +7,8 @@ signal shot_fired(origin: Vector3, velocity: Vector3)
 
 const MAX_DRAW_TIME := 0.85
 const FATIGUE_START_SEC := 3.5
-const MIN_LAUNCH_SPEED := 19.0
-const MAX_LAUNCH_SPEED := 47.0
+const MIN_LAUNCH_SPEED := 32.0
+const MAX_LAUNCH_SPEED := 68.0
 
 var input_enabled: bool = false
 var is_drawing: bool = false
@@ -217,7 +217,10 @@ func _release_shot() -> void:
 		return
 	var speed := lerpf(MIN_LAUNCH_SPEED, MAX_LAUNCH_SPEED, draw_ratio)
 	var dir := -global_transform.basis.z.normalized()
-	var spawn_pos := global_position + dir * 0.85 + Vector3(0.0, -0.06, 0.0)
+	var up := global_transform.basis.y.normalized()
+	var spawn_pos := global_position + dir * 0.85
+	# Sight zeroed at 20 m on full draw (0.5 * g * t_20m = 0.5 * 6.5 * (20 / 68) ~= 0.956 m/s)
+	var launch_vel := dir * speed + up * (0.956 * draw_ratio)
 	draw_ratio = 0.0
 	_hold_time = 0.0
 	_recoil = 1.0
@@ -225,7 +228,7 @@ func _release_shot() -> void:
 	AudioManager.play_sfx("arrow_release")
 	AudioManager.vibrate(20)
 	emit_signal("draw_changed", 0.0, false)
-	emit_signal("shot_fired", spawn_pos, dir * speed)
+	emit_signal("shot_fired", spawn_pos, launch_vel)
 
 func _process(delta: float) -> void:
 	var sway_x := 0.0

@@ -6,7 +6,7 @@ const BowControllerScript := preload("res://scripts/gameplay/bow_controller.gd")
 const ProcTex := preload("res://scripts/gameplay/procedural_textures.gd")
 
 signal hud_updated(state: Dictionary)
-signal hit_feedback(kind: String, points: int)
+signal hit_feedback(kind: String, points: int, norm_pos: Vector2)
 signal level_finished(result: Dictionary)
 
 var camera: Camera3D
@@ -522,6 +522,7 @@ func _on_arrow_resolved(hit_info: Dictionary) -> void:
 	active_arrows = maxi(0, active_arrows - 1)
 	var pts := int(hit_info.get("points", 0))
 	var kind := str(hit_info.get("kind", "miss"))
+	var norm_pos: Vector2 = hit_info.get("norm_pos", Vector2.ZERO)
 
 	if bool(hit_info.get("hit", false)) and pts > 0:
 		combo_streak += 1
@@ -541,14 +542,14 @@ func _on_arrow_resolved(hit_info: Dictionary) -> void:
 			bullseye_streak = 0
 			AudioManager.play_sfx("hit_target")
 			AudioManager.vibrate(25)
-		emit_signal("hit_feedback", kind, final_pts)
+		emit_signal("hit_feedback", kind, final_pts, norm_pos)
 	else:
 		combo_streak = 0
 		bullseye_streak = 0
 		if pts < 0:
 			score = maxi(0, score + pts)
 			AudioManager.play_sfx("hit_penalty")
-			emit_signal("hit_feedback", kind, pts)
+			emit_signal("hit_feedback", kind, pts, norm_pos)
 
 	_emit_hud()
 	_check_end_condition()

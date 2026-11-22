@@ -2,6 +2,7 @@ extends Node
 
 const LevelSceneScript := preload("res://scripts/gameplay/level_scene.gd")
 const ReticleScript := preload("res://scripts/ui/reticle_overlay.gd")
+const HitDiagramScript := preload("res://scripts/ui/hit_diagram.gd")
 
 var level_scene: Node3D
 var ui_layer: CanvasLayer
@@ -21,6 +22,8 @@ var _hud_arrows_lbl: Label
 var _hud_timer_lbl: Label
 var _hud_feedback_lbl: Label
 var _reticle_overlay: Control
+var _hit_diagram: Control
+var _hud_feedback_pill: PanelContainer
 
 func _ready() -> void:
 	level_scene = LevelSceneScript.new()
@@ -370,15 +373,28 @@ func _build_hud() -> void:
 	_hud_arrows_lbl.add_theme_color_override("font_color", Color(0.98, 0.94, 0.84))
 	arrows_pill.add_child(_hud_arrows_lbl)
 
+	_hud_feedback_pill = _make_hud_pill(hud_panel, Color(0.14, 0.10, 0.07, 0.88))
+	_hud_feedback_pill.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_hud_feedback_pill.offset_top = 104
+	_hud_feedback_pill.offset_left = -190
+	_hud_feedback_pill.offset_right = 190
+	_hud_feedback_pill.visible = false
 	_hud_feedback_lbl = Label.new()
-	_hud_feedback_lbl.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	_hud_feedback_lbl.offset_top = 114
-	_hud_feedback_lbl.offset_left = -240
-	_hud_feedback_lbl.offset_right = 240
 	_hud_feedback_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_hud_feedback_lbl.add_theme_font_size_override("font_size", 28)
-	_hud_feedback_lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.25))
-	hud_panel.add_child(_hud_feedback_lbl)
+	_hud_feedback_lbl.add_theme_font_size_override("font_size", 26)
+	_hud_feedback_lbl.add_theme_color_override("font_color", Color(1.0, 0.90, 0.28))
+	_hud_feedback_pill.add_child(_hud_feedback_lbl)
+
+	# 2D Target Closeup Impact Diagram in top-right (shows exact hit point)
+	_hit_diagram = HitDiagramScript.new()
+	_hit_diagram.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_hit_diagram.offset_left = -182
+	_hit_diagram.offset_top = 84
+	_hit_diagram.offset_right = -20
+	_hit_diagram.offset_bottom = 246
+	_hit_diagram.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hit_diagram.visible = false
+	hud_panel.add_child(_hit_diagram)
 
 	var menu_btn := _make_button("II", func():
 		level_scene.show_menu_backdrop()
@@ -449,6 +465,10 @@ func _try_start_level(level_id: int) -> void:
 		return
 	_current_level_id = level_id
 	_show_screen("hud")
+	if _hit_diagram != null:
+		_hit_diagram.reset_hits()
+	if _hud_feedback_pill != null:
+		_hud_feedback_pill.visible = false
 	level_scene.start_level(level_id)
 
 func _on_draw_changed(ratio: float, drawing: bool) -> void:
@@ -466,7 +486,7 @@ func _on_hud_updated(st: Dictionary) -> void:
 	_hud_timer_lbl.visible = bool(st["has_timer"])
 	_hud_timer_lbl.text = LocalizationManager.t("hud_timer", {"sec": st["time_left"]})
 
-func _on_hit_feedback(kind: String, pts: int) -> void:
+func _on_hit_feedback(kind: String, pts: int, norm_pos: Vector2) -> void:
 	if _hud_feedback_lbl == null:
 		return
 	match kind:
@@ -478,6 +498,10 @@ func _on_hit_feedback(kind: String, pts: int) -> void:
 			_hud_feedback_lbl.text = LocalizationManager.t("hit_penalty", {"pts": pts})
 		_:
 			_hud_feedback_lbl.text = LocalizationManager.t("hit_ring", {"pts": pts})
+	if _hud_feedback_pill != null:
+		_hud_feedback_pill.visible = true
+	if _hit_diagram != null:
+		_hit_diagram.add_hit(norm_pos, kind, pts)
 
 func _on_level_finished(res: Dictionary) -> void:
 	for c in result_panel.get_children():

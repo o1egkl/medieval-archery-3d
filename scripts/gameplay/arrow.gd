@@ -2,7 +2,7 @@ extends Node3D
 
 signal arrow_resolved(hit_info: Dictionary)
 
-const GRAVITY := 9.81
+const GRAVITY := 6.5
 const WIND_FACTOR := 0.38
 const MAX_FLIGHT_TIME := 5.5
 
@@ -43,11 +43,14 @@ func _build_visual() -> void:
 
 	var fletch := MeshInstance3D.new()
 	var fbox := BoxMesh.new()
-	fbox.size = Vector3(0.09, 0.01, 0.14)
+	fbox.size = Vector3(0.14, 0.015, 0.18)
 	fletch.mesh = fbox
 	fletch.position = Vector3(0.0, 0.0, 0.36)
 	var mat_red := StandardMaterial3D.new()
-	mat_red.albedo_color = Color(0.85, 0.18, 0.16)
+	mat_red.albedo_color = Color(1.0, 0.22, 0.14)
+	mat_red.emission_enabled = true
+	mat_red.emission = Color(0.95, 0.25, 0.10)
+	mat_red.emission_energy_multiplier = 0.6
 	fletch.material_override = mat_red
 	add_child(fletch)
 
@@ -83,8 +86,10 @@ func _physics_process(delta: float) -> void:
 		global_position = hit["position"]
 		is_flying = false
 		var collider: Node = hit["collider"]
-		var target_node: Node = collider.get_parent()
-		if target_node != null and target_node.has_method("evaluate_hit"):
+		var target_node: Node = collider
+		while target_node != null and not target_node.has_method("evaluate_hit"):
+			target_node = target_node.get_parent()
+		if target_node != null:
 			var res: Dictionary = target_node.evaluate_hit(hit["position"])
 			# Stick arrow to moving or static target
 			var saved_global := global_transform
