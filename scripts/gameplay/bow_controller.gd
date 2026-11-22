@@ -21,8 +21,8 @@ var _bow_node: Node3D
 var _nocked_arrow: Node3D
 var _string_top: MeshInstance3D
 var _string_bot: MeshInstance3D
-var _top_tip := Vector3(0.0, 0.56, 0.14)
-var _bot_tip := Vector3(0.0, -0.56, 0.14)
+var _top_tip := Vector3(0.0, 0.58, 0.12)
+var _bot_tip := Vector3(0.0, -0.58, 0.12)
 var _active_touch_idx: int = -1
 var _recoil: float = 0.0
 var is_touch_mode: bool = false
@@ -36,89 +36,120 @@ func _ready() -> void:
 
 func _build_first_person_bow() -> void:
 	_bow_node = Node3D.new()
-	_bow_node.position = Vector3(0.20, -0.12, -0.56)
-	_bow_node.rotation_degrees = Vector3(2.0, 10.0, -14.0)
+	_bow_node.position = Vector3(0.24, -0.14, -0.56)
+	_bow_node.rotation_degrees = Vector3(2.0, 9.0, -13.0)
 	add_child(_bow_node)
 
-	var wood_mat := PbrAssets.get_pbr_material("wood", Vector3(1.0, 2.0, 1.0), Color(0.92, 0.78, 0.62))
+	var wood_mat := PbrAssets.get_pbr_material("wood", Vector3(1.0, 2.0, 1.0), Color(0.76, 0.58, 0.40))
 
 	var leather_mat := StandardMaterial3D.new()
-	leather_mat.albedo_color = Color(0.26, 0.17, 0.11)
-	leather_mat.roughness = 0.85
+	leather_mat.albedo_color = Color(0.24, 0.15, 0.09)
+	leather_mat.roughness = 0.78
+
+	var bronze_mat := StandardMaterial3D.new()
+	bronze_mat.albedo_color = Color(0.76, 0.58, 0.24)
+	bronze_mat.metallic = 0.78
+	bronze_mat.roughness = 0.32
+
+	var horn_mat := StandardMaterial3D.new()
+	horn_mat.albedo_color = Color(0.18, 0.15, 0.12)
+	horn_mat.roughness = 0.42
 
 	var iron_mat := StandardMaterial3D.new()
-	iron_mat.albedo_color = Color(0.74, 0.77, 0.82)
-	iron_mat.metallic = 0.8
-	iron_mat.roughness = 0.25
+	iron_mat.albedo_color = Color(0.76, 0.80, 0.85)
+	iron_mat.metallic = 0.85
+	iron_mat.roughness = 0.24
 
-	# Smooth 9-segment curved wooden recurve bow
+	# Smooth 18-segment S-curved medieval recurve bow
+	var seg_count := 18
 	var pts: Array[Vector3] = []
-	for i in range(10):
-		var t := float(i) / 9.0
-		var y := lerpf(-0.56, 0.56, t)
-		var norm_y := y / 0.56
-		var z := norm_y * norm_y * 0.14
+	for i in range(seg_count + 1):
+		var t := float(i) / float(seg_count)
+		var y := lerpf(-0.58, 0.58, t)
+		var ny := absf(y) / 0.58
+		# Graceful recurve S-profile: curves back through mid-limb, sweeps slightly forward at tips
+		var z := pow(ny, 1.8) * 0.16 - pow(maxf(0.0, ny - 0.72) / 0.28, 2.0) * 0.045
 		pts.append(Vector3(0.0, y, z))
 
-	for i in range(pts.size() - 1):
+	_bot_tip = pts[0]
+	_top_tip = pts[pts.size() - 1]
+
+	for i in range(seg_count):
 		var p0 := pts[i]
 		var p1 := pts[i + 1]
+		var mid_ny := absf((p0.y + p1.y) * 0.5) / 0.58
+		var thick := lerpf(0.020, 0.009, mid_ny)
 		var seg := MeshInstance3D.new()
 		var cm := CylinderMesh.new()
-		var mid_t := absf(float(i) - 4.0) / 4.5
-		var thick := lerpf(0.025, 0.013, mid_t)
 		cm.top_radius = thick
 		cm.bottom_radius = thick
-		cm.height = p0.distance_to(p1) + 0.01
+		cm.height = p0.distance_to(p1) + 0.008
+		cm.radial_segments = 14
 		seg.mesh = cm
 		seg.position = (p0 + p1) * 0.5
 		var dir := (p1 - p0).normalized()
 		seg.basis = Basis(Vector3.RIGHT, dir, Vector3.RIGHT.cross(dir).normalized())
-		seg.material_override = leather_mat if (i == 4) else wood_mat
+		if mid_ny < 0.14:
+			seg.material_override = leather_mat
+		elif mid_ny > 0.90:
+			seg.material_override = horn_mat
+		else:
+			seg.material_override = wood_mat
 		_bow_node.add_child(seg)
 
-	# Stylized leather-gloved left hand gripping the bow handle
-	var glove := MeshInstance3D.new()
-	var gm := SphereMesh.new()
-	gm.radius = 0.055
-	gm.height = 0.11
-	glove.mesh = gm
-	glove.scale = Vector3(1.1, 0.95, 1.25)
-	glove.position = Vector3(-0.02, -0.02, 0.01)
-	glove.material_override = leather_mat
-	_bow_node.add_child(glove)
+	# Bronze decorative collar rings framing the leather grip
+	for ry: float in [-0.085, 0.085]:
+		var ring := MeshInstance3D.new()
+		var rm := TorusMesh.new()
+		rm.inner_radius = 0.018
+		rm.outer_radius = 0.025
+		ring.mesh = rm
+		ring.position = Vector3(0.0, ry, 0.004)
+		ring.material_override = bronze_mat
+		_bow_node.add_child(ring)
 
-	var forearm := MeshInstance3D.new()
-	var fm := CylinderMesh.new()
-	fm.top_radius = 0.042
-	fm.bottom_radius = 0.052
-	fm.height = 0.36
-	forearm.mesh = fm
-	forearm.position = Vector3(-0.10, -0.14, 0.14)
-	forearm.rotation_degrees = Vector3(58.0, 22.0, -24.0)
-	forearm.material_override = leather_mat
-	_bow_node.add_child(forearm)
+	# Sleek contoured leather archer's fingers wrapping the bow grip (compact, zero screen clutter)
+	for fi in range(4):
+		var finger := MeshInstance3D.new()
+		var fm := CapsuleMesh.new()
+		fm.radius = 0.011
+		fm.height = 0.068
+		finger.mesh = fm
+		finger.position = Vector3(-0.006, -0.045 + float(fi) * 0.024, 0.004)
+		finger.rotation_degrees = Vector3(0.0, 0.0, 90.0)
+		finger.material_override = leather_mat
+		_bow_node.add_child(finger)
+
+	var thumb := MeshInstance3D.new()
+	var thm := CapsuleMesh.new()
+	thm.radius = 0.012
+	thm.height = 0.062
+	thumb.mesh = thm
+	thumb.position = Vector3(-0.026, 0.036, 0.018)
+	thumb.rotation_degrees = Vector3(32.0, 12.0, 18.0)
+	thumb.material_override = leather_mat
+	_bow_node.add_child(thumb)
 
 	# Dynamic 2-segment taut bowstring
 	var str_mat := StandardMaterial3D.new()
-	str_mat.albedo_color = Color(0.88, 0.84, 0.74)
+	str_mat.albedo_color = Color(0.86, 0.82, 0.72)
 	_string_top = MeshInstance3D.new()
 	_string_bot = MeshInstance3D.new()
 	for s in [_string_top, _string_bot]:
 		var sc := CylinderMesh.new()
-		sc.top_radius = 0.003
-		sc.bottom_radius = 0.003
+		sc.top_radius = 0.0024
+		sc.bottom_radius = 0.0024
 		sc.height = 1.0
 		s.mesh = sc
 		s.material_override = str_mat
 		_bow_node.add_child(s)
 
-	# Nocked feathered wooden arrow
+	# Sleek feathered wooden arrow with forged steel broadhead
 	_nocked_arrow = Node3D.new()
 	var shaft := MeshInstance3D.new()
 	var sm := CylinderMesh.new()
-	sm.top_radius = 0.008
-	sm.bottom_radius = 0.008
+	sm.top_radius = 0.006
+	sm.bottom_radius = 0.006
 	sm.height = 0.78
 	shaft.mesh = sm
 	shaft.rotation_degrees.x = 90.0
@@ -128,36 +159,44 @@ func _build_first_person_bow() -> void:
 	var head := MeshInstance3D.new()
 	var hm := CylinderMesh.new()
 	hm.top_radius = 0.001
-	hm.bottom_radius = 0.020
-	hm.height = 0.09
+	hm.bottom_radius = 0.016
+	hm.height = 0.085
 	head.mesh = hm
 	head.rotation_degrees.x = -90.0
 	head.position = Vector3(0.0, 0.0, -0.43)
 	head.material_override = iron_mat
 	_nocked_arrow.add_child(head)
 
-	var fletch_mat := StandardMaterial3D.new()
-	fletch_mat.albedo_color = Color(0.92, 0.86, 0.76)
-	for ang: float in [0.0, 60.0, -60.0]:
+	var fletch_red := StandardMaterial3D.new()
+	fletch_red.albedo_color = Color(0.82, 0.18, 0.14)
+	fletch_red.roughness = 0.85
+	var fletch_white := StandardMaterial3D.new()
+	fletch_white.albedo_color = Color(0.92, 0.89, 0.82)
+	fletch_white.roughness = 0.85
+	for idx in range(3):
+		var ang: float = float(idx) * 120.0
 		var vane := MeshInstance3D.new()
 		var vm := BoxMesh.new()
-		vm.size = Vector3(0.055, 0.004, 0.12)
+		vm.size = Vector3(0.036, 0.003, 0.11)
 		vane.mesh = vm
 		vane.position = Vector3(0.0, 0.0, 0.31)
 		vane.rotation_degrees.z = ang
-		vane.material_override = fletch_mat
+		vane.material_override = fletch_red if idx == 0 else fletch_white
 		_nocked_arrow.add_child(vane)
 
-	_nocked_arrow.position = Vector3(-0.04, 0.04, -0.18)
+	_nocked_arrow.position = Vector3(-0.032, 0.055, -0.18)
 	_bow_node.add_child(_nocked_arrow)
 	_update_bowstring(0.0)
 
 func _update_bowstring(ratio: float) -> void:
-	var nock := Vector3(-0.04, 0.04, lerpf(0.14, 0.44, ratio))
-	_place_segment(_string_top, _top_tip, nock)
-	_place_segment(_string_bot, _bot_tip, nock)
+	var flex := ratio * 0.03
+	var top := _top_tip + Vector3(0.0, -flex * 0.4, flex)
+	var bot := _bot_tip + Vector3(0.0, flex * 0.4, flex)
+	var nock := Vector3(-0.032, 0.055, lerpf(0.12, 0.42, ratio))
+	_place_segment(_string_top, top, nock)
+	_place_segment(_string_bot, bot, nock)
 	if _nocked_arrow != null:
-		_nocked_arrow.position = Vector3(-0.04, 0.04, nock.z - 0.36)
+		_nocked_arrow.position = Vector3(-0.032, 0.055, nock.z - 0.36)
 
 func _place_segment(mi: MeshInstance3D, a: Vector3, b: Vector3) -> void:
 	var dist := a.distance_to(b)
@@ -201,7 +240,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	var sens := float(SaveManager.get_setting("aim_sensitivity", 1.0)) * 0.0032
 
-	# Desktop cancel shortcuts: Right Mouse Button, Space, or R (works while holding LMB!)
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 		_set_touch_mode(false)
 		if is_drawing:
@@ -227,7 +265,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			_hold_time = 0.0
 			AudioManager.play_sfx("bow_draw")
 		elif not event.pressed and is_drawing and event.index == _active_touch_idx:
-			# One-handed mobile cancel: releasing inside the Cancel Shot button rect relaxes bow
 			if cancel_zone_rect.size.x > 0.0 and cancel_zone_rect.has_point(event.position):
 				cancel_draw()
 				AudioManager.play_sfx("ui_click")
@@ -254,7 +291,6 @@ func _release_shot() -> void:
 	var dir := -global_transform.basis.z.normalized()
 	var up := global_transform.basis.y.normalized()
 	var spawn_pos := global_position + dir * 0.85
-	# Sight zeroed at 20 m on full draw (0.5 * g * t_20m = 0.5 * 6.5 * (20 / 68) ~= 0.956 m/s)
 	var launch_vel := dir * speed + up * (0.956 * draw_ratio)
 	draw_ratio = 0.0
 	_hold_time = 0.0
@@ -278,6 +314,7 @@ func _process(delta: float) -> void:
 			var fatigue := minf(1.0, (_hold_time - FATIGUE_START_SEC) * 0.55)
 			sway_x = sin(_hold_time * 5.2) * 0.018 * fatigue
 			sway_y = cos(_hold_time * 4.1) * 0.015 * fatigue
+
 	if input_enabled and bool(SaveManager.get_setting("gyro_enabled", false)):
 		var gyro := Input.get_gyroscope()
 		_yaw = clampf(_yaw + gyro.y * delta * 0.45, -0.65, 0.65)
@@ -287,5 +324,5 @@ func _process(delta: float) -> void:
 	fov = lerpf(fov, 50.0 if is_drawing else 60.0, delta * 8.0)
 	_update_bowstring(draw_ratio)
 	if _bow_node != null:
-		var idle_bob := sin(Time.get_ticks_msec() * 0.002) * 0.008
-		_bow_node.position = Vector3(0.20, -0.12 + idle_bob - _recoil * 0.03, -0.56 + _recoil * 0.04)
+		var idle_bob := sin(Time.get_ticks_msec() * 0.002) * 0.006
+		_bow_node.position = Vector3(0.24, -0.14 + idle_bob - _recoil * 0.025, -0.56 + _recoil * 0.035)

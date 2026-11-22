@@ -188,9 +188,7 @@ func _build_biome(biome: String) -> void:
 		_build_grass_tufts(1400 if quality == "high" else 850, ground_tint)
 
 	# Rolling medieval green hills on the horizon
-	var hill_mat := StandardMaterial3D.new()
-	hill_mat.albedo_color = Color(0.28, 0.50, 0.22) * ground_tint
-	hill_mat.roughness = 0.95
+	var hill_mat := PbrAssets.get_pbr_material("grass", Vector3(8.0, 4.0, 1.0), Color(0.46, 0.64, 0.34) * ground_tint)
 	for hspec in [
 		{"pos": Vector3(-36.0, -4.0, -98.0), "scale": Vector3(48.0, 14.0, 24.0)},
 		{"pos": Vector3(34.0, -4.5, -104.0), "scale": Vector3(52.0, 16.0, 26.0)},
