@@ -1,6 +1,7 @@
 extends Node
 
 const LevelSceneScript := preload("res://scripts/gameplay/level_scene.gd")
+const ReticleScript := preload("res://scripts/ui/reticle_overlay.gd")
 
 var level_scene: Node3D
 var ui_layer: CanvasLayer
@@ -19,8 +20,7 @@ var _hud_wind_lbl: Label
 var _hud_arrows_lbl: Label
 var _hud_timer_lbl: Label
 var _hud_feedback_lbl: Label
-var _draw_bar: ProgressBar
-var _reticle: ColorRect
+var _reticle_overlay: Control
 
 func _ready() -> void:
 	level_scene = LevelSceneScript.new()
@@ -63,47 +63,91 @@ func _rebuild_all_ui(_unused = null) -> void:
 	_build_attempts_modal()
 	_show_screen(prev_visible)
 
-func _make_backdrop() -> PanelContainer:
+func _make_medieval_style(bg: Color, border: Color, radius: int = 14) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = bg
+	sb.border_color = border
+	sb.border_width_left = 2
+	sb.border_width_right = 2
+	sb.border_width_top = 2
+	sb.border_width_bottom = 2
+	sb.corner_radius_top_left = radius
+	sb.corner_radius_top_right = radius
+	sb.corner_radius_bottom_left = radius
+	sb.corner_radius_bottom_right = radius
+	sb.content_margin_left = 18
+	sb.content_margin_right = 18
+	sb.content_margin_top = 10
+	sb.content_margin_bottom = 10
+	sb.shadow_size = 6
+	sb.shadow_color = Color(0.0, 0.0, 0.0, 0.45)
+	return sb
+
+func _make_backdrop(alpha: float = 0.72) -> PanelContainer:
 	var p := PanelContainer.new()
 	p.set_anchors_preset(Control.PRESET_FULL_RECT)
 	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.11, 0.09, 0.08, 0.90)
-	sb.content_margin_left = 36
-	sb.content_margin_right = 36
+	sb.bg_color = Color(0.08, 0.06, 0.05, alpha)
+	sb.content_margin_left = 40
+	sb.content_margin_right = 40
 	sb.content_margin_top = 28
 	sb.content_margin_bottom = 28
 	p.add_theme_stylebox_override("panel", sb)
 	ui_layer.add_child(p)
 	return p
 
-func _make_button(text: String, cb: Callable, min_w: float = 260.0) -> Button:
+func _make_button(text: String, cb: Callable, min_w: float = 280.0) -> Button:
 	var b := Button.new()
 	b.text = text
-	b.custom_minimum_size = Vector2(min_w, 52)
+	b.custom_minimum_size = Vector2(min_w, 54)
+	b.add_theme_font_size_override("font_size", 20)
+	b.add_theme_color_override("font_color", Color(0.98, 0.94, 0.84))
+	b.add_theme_stylebox_override("normal", _make_medieval_style(Color(0.24, 0.16, 0.10, 0.95), Color(0.76, 0.58, 0.28), 12))
+	b.add_theme_stylebox_override("hover", _make_medieval_style(Color(0.34, 0.22, 0.13, 0.98), Color(0.96, 0.78, 0.34), 12))
+	b.add_theme_stylebox_override("pressed", _make_medieval_style(Color(0.16, 0.10, 0.06, 0.98), Color(0.96, 0.78, 0.34), 12))
 	b.pressed.connect(func():
 		AudioManager.play_sfx("ui_click")
 		cb.call()
 	)
 	return b
 
+func _make_hud_pill(parent: Control, bg: Color = Color(0.18, 0.12, 0.08, 0.86)) -> PanelContainer:
+	var p := PanelContainer.new()
+	p.add_theme_stylebox_override("panel", _make_medieval_style(bg, Color(0.74, 0.58, 0.32, 0.92), 18))
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(p)
+	return p
+
 func _build_menu() -> void:
-	menu_panel = _make_backdrop()
+	# Translucent overlay so the live sunlit 3D medieval tournament arena is visible behind!
+	menu_panel = _make_backdrop(0.36)
 	var vbox := VBoxContainer.new()
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 16)
+	vbox.add_theme_constant_override("separation", 14)
 	menu_panel.add_child(vbox)
+
+	var card := PanelContainer.new()
+	card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	card.add_theme_stylebox_override("panel", _make_medieval_style(Color(0.14, 0.10, 0.07, 0.88), Color(0.84, 0.66, 0.32), 20))
+	vbox.add_child(card)
+
+	var inner := VBoxContainer.new()
+	inner.alignment = BoxContainer.ALIGNMENT_CENTER
+	inner.add_theme_constant_override("separation", 14)
+	card.add_child(inner)
 
 	var title := Label.new()
 	title.text = LocalizationManager.t("app_title")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 40)
-	vbox.add_child(title)
+	title.add_theme_font_size_override("font_size", 36)
+	title.add_theme_color_override("font_color", Color(0.98, 0.90, 0.66))
+	inner.add_child(title)
 
 	var ed := Label.new()
 	ed.text = LocalizationManager.t("edition_paid") if GameConfig.is_paid_build() else LocalizationManager.t("edition_free")
 	ed.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	ed.add_theme_color_override("font_color", Color(0.95, 0.78, 0.28))
-	vbox.add_child(ed)
+	inner.add_child(ed)
 
 	var att := Label.new()
 	att.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -111,12 +155,12 @@ func _build_menu() -> void:
 		att.text = LocalizationManager.t("attempts_unlimited")
 	else:
 		att.text = LocalizationManager.t("attempts_badge", {"left": AttemptsManager.get_remaining(), "base": AttemptsManager.DAILY_BASE_ATTEMPTS})
-	vbox.add_child(att)
+	inner.add_child(att)
 
 	var btn_box := VBoxContainer.new()
 	btn_box.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	btn_box.add_theme_constant_override("separation", 12)
-	vbox.add_child(btn_box)
+	btn_box.add_theme_constant_override("separation", 10)
+	inner.add_child(btn_box)
 
 	btn_box.add_child(_make_button(LocalizationManager.t("btn_play"), func(): _try_start_level(int(SaveManager.data.get("unlocked_level", 1)))))
 	btn_box.add_child(_make_button(LocalizationManager.t("btn_levels"), func(): _show_screen("levels")))
@@ -124,7 +168,7 @@ func _build_menu() -> void:
 	btn_box.add_child(_make_button(LocalizationManager.t("btn_settings"), func(): _show_screen("settings")))
 
 func _build_levels() -> void:
-	levels_panel = _make_backdrop()
+	levels_panel = _make_backdrop(0.84)
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 14)
 	levels_panel.add_child(vbox)
@@ -159,7 +203,7 @@ func _build_levels() -> void:
 		grid.add_child(btn)
 
 func _build_help() -> void:
-	help_panel = _make_backdrop()
+	help_panel = _make_backdrop(0.86)
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 14)
 	help_panel.add_child(vbox)
@@ -200,7 +244,7 @@ func _build_help() -> void:
 		content.add_child(body)
 
 func _build_settings() -> void:
-	settings_panel = _make_backdrop()
+	settings_panel = _make_backdrop(0.86)
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 14)
 	settings_panel.add_child(vbox)
@@ -213,7 +257,6 @@ func _build_settings() -> void:
 	top.add_child(hdr)
 	vbox.add_child(top)
 
-	# Language selector (dynamically populated from translations.csv columns)
 	var lang_row := HBoxContainer.new()
 	var lang_lbl := Label.new()
 	lang_lbl.text = LocalizationManager.t("settings_language")
@@ -233,7 +276,6 @@ func _build_settings() -> void:
 	lang_row.add_child(lang_opt)
 	vbox.add_child(lang_row)
 
-	# Toggles
 	var toggles := [
 		["settings_sound", "sound_enabled"],
 		["settings_music", "music_enabled"],
@@ -252,7 +294,6 @@ func _build_settings() -> void:
 		row.add_child(cb)
 		vbox.add_child(row)
 
-	# Aim sensitivity slider
 	var sens_row := HBoxContainer.new()
 	var sens_lbl := Label.new()
 	sens_lbl.text = LocalizationManager.t("settings_sensitivity")
@@ -268,7 +309,6 @@ func _build_settings() -> void:
 	sens_row.add_child(slider)
 	vbox.add_child(sens_row)
 
-	# Graphics quality preset
 	var q_row := HBoxContainer.new()
 	var q_lbl := Label.new()
 	q_lbl.text = LocalizationManager.t("settings_quality")
@@ -292,89 +332,86 @@ func _build_hud() -> void:
 	hud_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ui_layer.add_child(hud_panel)
 
+	# Top-left medieval wood badge: Level & Score
+	var score_pill := _make_hud_pill(hud_panel)
+	score_pill.position = Vector2(20, 16)
 	_hud_score_lbl = Label.new()
-	_hud_score_lbl.position = Vector2(24, 18)
-	_hud_score_lbl.add_theme_font_size_override("font_size", 24)
-	hud_panel.add_child(_hud_score_lbl)
+	_hud_score_lbl.add_theme_font_size_override("font_size", 22)
+	_hud_score_lbl.add_theme_color_override("font_color", Color(0.98, 0.94, 0.84))
+	score_pill.add_child(_hud_score_lbl)
 
+	# Top-center slate pill: Wind direction & speed
+	var wind_pill := _make_hud_pill(hud_panel, Color(0.24, 0.34, 0.44, 0.84))
+	wind_pill.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	wind_pill.offset_top = 16
+	wind_pill.offset_left = -115
+	wind_pill.offset_right = 115
 	_hud_wind_lbl = Label.new()
-	_hud_wind_lbl.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	_hud_wind_lbl.offset_top = 18
 	_hud_wind_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_hud_wind_lbl.add_theme_font_size_override("font_size", 24)
-	hud_panel.add_child(_hud_wind_lbl)
+	_hud_wind_lbl.add_theme_font_size_override("font_size", 22)
+	wind_pill.add_child(_hud_wind_lbl)
 
 	_hud_timer_lbl = Label.new()
 	_hud_timer_lbl.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	_hud_timer_lbl.offset_top = 52
+	_hud_timer_lbl.offset_top = 72
 	_hud_timer_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hud_timer_lbl.add_theme_font_size_override("font_size", 22)
+	_hud_timer_lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.36))
 	hud_panel.add_child(_hud_timer_lbl)
 
+	# Bottom-left quiver counter pill
+	var arrows_pill := _make_hud_pill(hud_panel)
+	arrows_pill.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	arrows_pill.offset_left = 20
+	arrows_pill.offset_top = -66
+	arrows_pill.offset_bottom = -18
 	_hud_arrows_lbl = Label.new()
-	_hud_arrows_lbl.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	_hud_arrows_lbl.offset_left = 24
-	_hud_arrows_lbl.offset_top = -54
-	_hud_arrows_lbl.add_theme_font_size_override("font_size", 24)
-	hud_panel.add_child(_hud_arrows_lbl)
+	_hud_arrows_lbl.add_theme_font_size_override("font_size", 22)
+	_hud_arrows_lbl.add_theme_color_override("font_color", Color(0.98, 0.94, 0.84))
+	arrows_pill.add_child(_hud_arrows_lbl)
 
 	_hud_feedback_lbl = Label.new()
 	_hud_feedback_lbl.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	_hud_feedback_lbl.offset_top = 110
-	_hud_feedback_lbl.offset_left = -220
-	_hud_feedback_lbl.offset_right = 220
+	_hud_feedback_lbl.offset_top = 114
+	_hud_feedback_lbl.offset_left = -240
+	_hud_feedback_lbl.offset_right = 240
 	_hud_feedback_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hud_feedback_lbl.add_theme_font_size_override("font_size", 28)
+	_hud_feedback_lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.25))
 	hud_panel.add_child(_hud_feedback_lbl)
 
 	var menu_btn := _make_button("II", func():
-		level_scene.stop_level()
+		level_scene.show_menu_backdrop()
 		_show_screen("menu")
-	, 64.0)
+	, 58.0)
 	menu_btn.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	menu_btn.offset_left = -84
+	menu_btn.offset_left = -78
 	menu_btn.offset_top = 16
 	menu_btn.offset_right = -20
 	menu_btn.offset_bottom = 68
 	hud_panel.add_child(menu_btn)
 
-	var cancel_btn := _make_button(LocalizationManager.t("btn_cancel_shot"), func(): level_scene.camera.cancel_draw(), 200.0)
+	var cancel_btn := _make_button(LocalizationManager.t("btn_cancel_shot"), func(): level_scene.camera.cancel_draw(), 210.0)
 	cancel_btn.button_down.connect(func(): level_scene.camera.cancel_draw())
 	cancel_btn.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	cancel_btn.offset_left = -224
-	cancel_btn.offset_top = -72
+	cancel_btn.offset_left = -230
+	cancel_btn.offset_top = -70
 	cancel_btn.offset_right = -20
-	cancel_btn.offset_bottom = -20
+	cancel_btn.offset_bottom = -18
 	hud_panel.add_child(cancel_btn)
 
-	_reticle = ColorRect.new()
-	_reticle.color = Color(1.0, 1.0, 1.0, 0.9)
-	_reticle.size = Vector2(8, 8)
-	_reticle.set_anchors_preset(Control.PRESET_CENTER)
-	_reticle.offset_left = -4
-	_reticle.offset_top = -4
-	_reticle.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hud_panel.add_child(_reticle)
-
-	_draw_bar = ProgressBar.new()
-	_draw_bar.min_value = 0.0
-	_draw_bar.max_value = 100.0
-	_draw_bar.show_percentage = false
-	_draw_bar.set_anchors_preset(Control.PRESET_CENTER)
-	_draw_bar.offset_left = -60
-	_draw_bar.offset_right = 60
-	_draw_bar.offset_top = 26
-	_draw_bar.offset_bottom = 38
-	_draw_bar.visible = false
-	_draw_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hud_panel.add_child(_draw_bar)
+	# Circular white reticle + curved golden tension arc
+	_reticle_overlay = ReticleScript.new()
+	_reticle_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_reticle_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hud_panel.add_child(_reticle_overlay)
 
 func _build_result_modal() -> void:
-	result_panel = _make_backdrop()
+	result_panel = _make_backdrop(0.80)
 	result_panel.visible = false
 
 func _build_attempts_modal() -> void:
-	attempts_modal = _make_backdrop()
+	attempts_modal = _make_backdrop(0.84)
 	attempts_modal.visible = false
 	var vbox := VBoxContainer.new()
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -415,9 +452,8 @@ func _try_start_level(level_id: int) -> void:
 	level_scene.start_level(level_id)
 
 func _on_draw_changed(ratio: float, drawing: bool) -> void:
-	if _draw_bar != null:
-		_draw_bar.visible = drawing
-		_draw_bar.value = ratio * 100.0
+	if _reticle_overlay != null:
+		_reticle_overlay.set_draw_state(ratio, drawing)
 
 func _on_hud_updated(st: Dictionary) -> void:
 	if _hud_score_lbl == null:
@@ -445,6 +481,7 @@ func _on_hit_feedback(kind: String, pts: int) -> void:
 
 func _on_level_finished(res: Dictionary) -> void:
 	for c in result_panel.get_children():
+		result_panel.remove_child(c)
 		c.queue_free()
 	var vbox := VBoxContainer.new()
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -455,6 +492,7 @@ func _on_level_finished(res: Dictionary) -> void:
 	title.text = LocalizationManager.t("result_win") if bool(res["won"]) else LocalizationManager.t("result_fail")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 36)
+	title.add_theme_color_override("font_color", Color(0.98, 0.88, 0.42))
 	vbox.add_child(title)
 
 	var sc := Label.new()
@@ -482,6 +520,9 @@ func _on_level_finished(res: Dictionary) -> void:
 	btns.add_child(_make_button(LocalizationManager.t("btn_retry"), func(): _try_start_level(_current_level_id), 180.0))
 	if bool(res["won"]) and _current_level_id < GameConfig.get_level_count():
 		btns.add_child(_make_button(LocalizationManager.t("btn_next_level"), func(): _try_start_level(_current_level_id + 1), 200.0))
-	btns.add_child(_make_button(LocalizationManager.t("btn_main_menu"), func(): _show_screen("menu"), 180.0))
+	btns.add_child(_make_button(LocalizationManager.t("btn_main_menu"), func():
+		level_scene.show_menu_backdrop()
+		_show_screen("menu")
+	, 180.0))
 
 	_show_screen("result")

@@ -1,5 +1,7 @@
 extends Node3D
 
+const ProcTex := preload("res://scripts/gameplay/procedural_textures.gd")
+
 var target_type: String = "static"
 var radius: float = 0.75
 var move_speed: float = 0.0
@@ -7,6 +9,7 @@ var amplitude: float = 0.0
 var base_pos: Vector3 = Vector3.ZERO
 var _time: float = 0.0
 var _pivot: Node3D
+var _rail_beam: Node3D
 
 func setup(cfg: Dictionary) -> void:
 	target_type = str(cfg.get("type", "static"))
@@ -17,6 +20,12 @@ func setup(cfg: Dictionary) -> void:
 	position = base_pos
 	_build_mesh()
 
+func _make_wood_mat() -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.albedo_texture = ProcTex.get_wood_texture()
+	m.roughness = 0.82
+	return m
+
 func _build_mesh() -> void:
 	_pivot = Node3D.new()
 	add_child(_pivot)
@@ -26,22 +35,35 @@ func _build_mesh() -> void:
 	var col := CollisionShape3D.new()
 	var shape := CylinderShape3D.new()
 	shape.radius = radius
-	shape.height = 0.24
+	shape.height = 0.28
 	col.shape = shape
 	col.rotation_degrees.x = 90.0
 	body.add_child(col)
 
+	var wood_mat := _make_wood_mat()
+
 	if target_type == "barrel_bonus":
 		var barrel := MeshInstance3D.new()
 		var mesh := CylinderMesh.new()
-		mesh.top_radius = radius * 0.85
-		mesh.bottom_radius = radius * 0.9
-		mesh.height = radius * 1.8
+		mesh.top_radius = radius * 0.82
+		mesh.bottom_radius = radius * 0.88
+		mesh.height = radius * 1.9
 		barrel.mesh = mesh
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = Color(0.55, 0.34, 0.14)
-		barrel.material_override = mat
+		barrel.material_override = wood_mat
 		_pivot.add_child(barrel)
+		for band_y in [-radius * 0.55, radius * 0.55]:
+			var band := MeshInstance3D.new()
+			var bm := CylinderMesh.new()
+			bm.top_radius = radius * 0.88
+			bm.bottom_radius = radius * 0.88
+			bm.height = 0.08
+			band.mesh = bm
+			band.position.y = band_y
+			var imat := StandardMaterial3D.new()
+			imat.albedo_color = Color(0.28, 0.28, 0.32)
+			imat.metallic = 0.75
+			band.material_override = imat
+			_pivot.add_child(band)
 		return
 
 	if target_type == "shield_penalty":
@@ -53,45 +75,105 @@ func _build_mesh() -> void:
 		shield.mesh = smesh
 		shield.rotation_degrees.x = 90.0
 		var smat := StandardMaterial3D.new()
-		smat.albedo_color = Color(0.68, 0.12, 0.12)
-		smat.metallic = 0.45
+		smat.albedo_color = Color(0.66, 0.11, 0.11)
+		smat.metallic = 0.55
+		smat.roughness = 0.35
 		shield.material_override = smat
 		_pivot.add_child(shield)
+		var boss := MeshInstance3D.new()
+		var bsm := SphereMesh.new()
+		bsm.radius = radius * 0.25
+		bsm.height = radius * 0.5
+		boss.mesh = bsm
+		boss.position.z = 0.08
+		var bmat := StandardMaterial3D.new()
+		bmat.albedo_color = Color(0.82, 0.72, 0.32)
+		bmat.metallic = 0.8
+		boss.material_override = bmat
+		_pivot.add_child(boss)
 		return
 
-	# Concentric medieval straw archery target
-	var rings := [
-		{"scale": 1.00, "z": 0.00, "color": Color(0.82, 0.70, 0.44)},
-		{"scale": 0.86, "z": 0.03, "color": Color(0.95, 0.95, 0.95)},
-		{"scale": 0.66, "z": 0.05, "color": Color(0.18, 0.48, 0.85)},
-		{"scale": 0.44, "z": 0.07, "color": Color(0.86, 0.20, 0.18)},
-		{"scale": 0.22, "z": 0.09, "color": Color(0.96, 0.78, 0.10)}
-	]
-	for r in rings:
-		var mi := MeshInstance3D.new()
-		var cm := CylinderMesh.new()
-		cm.top_radius = radius * r["scale"]
-		cm.bottom_radius = radius * r["scale"]
-		cm.height = 0.14
-		mi.mesh = cm
-		mi.rotation_degrees.x = 90.0
-		mi.position.z = r["z"]
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = r["color"]
-		mi.material_override = mat
-		_pivot.add_child(mi)
+	# Braided straw drum body
+	var drum := MeshInstance3D.new()
+	var cm := CylinderMesh.new()
+	cm.top_radius = radius
+	cm.bottom_radius = radius
+	cm.height = 0.26
+	cm.radial_segments = 32
+	drum.mesh = cm
+	drum.rotation_degrees.x = 90.0
+	var straw_mat := StandardMaterial3D.new()
+	straw_mat.albedo_color = Color(0.80, 0.66, 0.36)
+	straw_mat.roughness = 0.92
+	drum.material_override = straw_mat
+	_pivot.add_child(drum)
 
-	# Wooden stand legs (for non-pendulum targets)
+	# Crisp painted bullseye face disk on front
+	var face := MeshInstance3D.new()
+	var fm := CylinderMesh.new()
+	fm.top_radius = radius * 0.99
+	fm.bottom_radius = radius * 0.99
+	fm.height = 0.02
+	fm.radial_segments = 32
+	face.mesh = fm
+	face.rotation_degrees.x = 90.0
+	face.position.z = 0.135
+	var face_mat := StandardMaterial3D.new()
+	face_mat.albedo_texture = ProcTex.get_target_face_texture()
+	face_mat.roughness = 0.78
+	face.material_override = face_mat
+	_pivot.add_child(face)
+
+	# Wooden A-frame tripod stand (like the concept art)
 	if target_type != "pendulum":
-		var leg := MeshInstance3D.new()
-		var lbox := BoxMesh.new()
-		lbox.size = Vector3(0.14, max(base_pos.y, 1.2), 0.14)
-		leg.mesh = lbox
-		leg.position = Vector3(0.0, -base_pos.y * 0.5, -0.14)
-		var lmat := StandardMaterial3D.new()
-		lmat.albedo_color = Color(0.38, 0.24, 0.12)
-		leg.material_override = lmat
-		_pivot.add_child(leg)
+		var leg_h: float = maxf(base_pos.y + 0.35, 1.5)
+		var leg_specs := [
+			{"pos": Vector3(-radius * 0.55, -base_pos.y * 0.45, -0.14), "rot": Vector3(6.0, 0.0, -14.0)},
+			{"pos": Vector3(radius * 0.55, -base_pos.y * 0.45, -0.14), "rot": Vector3(6.0, 0.0, 14.0)},
+			{"pos": Vector3(0.0, -base_pos.y * 0.45, -0.45), "rot": Vector3(-22.0, 0.0, 0.0)}
+		]
+		for ls in leg_specs:
+			var leg := MeshInstance3D.new()
+			var lbox := BoxMesh.new()
+			lbox.size = Vector3(0.11, leg_h, 0.11)
+			leg.mesh = lbox
+			leg.position = ls["pos"]
+			leg.rotation_degrees = ls["rot"]
+			leg.material_override = wood_mat
+			_pivot.add_child(leg)
+	else:
+		# Hanging rope for pendulum targets
+		var rope := MeshInstance3D.new()
+		var rm := CylinderMesh.new()
+		rm.top_radius = 0.025
+		rm.bottom_radius = 0.025
+		rm.height = 2.4
+		rope.mesh = rm
+		rope.position = Vector3(0.0, radius + 1.15, 0.0)
+		var rmat := StandardMaterial3D.new()
+		rmat.albedo_color = Color(0.68, 0.56, 0.36)
+		rope.material_override = rmat
+		_pivot.add_child(rope)
+
+	# Wooden horizontal rail beam placed in world space for rail targets
+	if target_type == "rail" and get_parent() != null:
+		_rail_beam = Node3D.new()
+		_rail_beam.position = Vector3(base_pos.x, 0.42, base_pos.z + 0.45)
+		var beam := MeshInstance3D.new()
+		var bm := BoxMesh.new()
+		bm.size = Vector3(amplitude * 2.0 + 1.8, 0.18, 0.18)
+		beam.mesh = bm
+		beam.material_override = wood_mat
+		_rail_beam.add_child(beam)
+		for side in [-1.0, 1.0]:
+			var post := MeshInstance3D.new()
+			var pm := BoxMesh.new()
+			pm.size = Vector3(0.24, 0.84, 0.24)
+			post.mesh = pm
+			post.position = Vector3(side * (amplitude + 0.85), -0.05, 0.0)
+			post.material_override = wood_mat
+			_rail_beam.add_child(post)
+		get_parent().add_child(_rail_beam)
 
 func _process(delta: float) -> void:
 	_time += delta
@@ -119,11 +201,11 @@ func evaluate_hit(world_hit_pos: Vector3) -> Dictionary:
 	var dist := Vector2(local_pos.x, local_pos.y).length()
 	var norm: float = dist / maxf(radius, 0.01)
 
-	if norm <= 0.24:
+	if norm <= 0.28:
 		return {"hit": true, "points": 100, "kind": "bullseye", "bullseye": true}
-	elif norm <= 0.48:
+	elif norm <= 0.50:
 		return {"hit": true, "points": 60, "kind": "ring", "bullseye": false}
-	elif norm <= 0.72:
+	elif norm <= 0.74:
 		return {"hit": true, "points": 30, "kind": "ring", "bullseye": false}
 	else:
 		return {"hit": true, "points": 10, "kind": "ring", "bullseye": false}
