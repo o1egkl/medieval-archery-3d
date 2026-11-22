@@ -24,6 +24,7 @@ var _hud_feedback_lbl: Label
 var _reticle_overlay: Control
 var _hit_diagram: Control
 var _hud_feedback_pill: PanelContainer
+var _cancel_btn: Button
 
 func _ready() -> void:
 	level_scene = LevelSceneScript.new()
@@ -32,6 +33,7 @@ func _ready() -> void:
 	level_scene.hit_feedback.connect(_on_hit_feedback)
 	level_scene.level_finished.connect(_on_level_finished)
 	level_scene.camera.draw_changed.connect(_on_draw_changed)
+	level_scene.camera.input_mode_changed.connect(_on_input_mode_changed)
 
 	ui_layer = CanvasLayer.new()
 	add_child(ui_layer)
@@ -407,14 +409,18 @@ func _build_hud() -> void:
 	menu_btn.offset_bottom = 68
 	hud_panel.add_child(menu_btn)
 
-	var cancel_btn := _make_button(LocalizationManager.t("btn_cancel_shot"), func(): level_scene.camera.cancel_draw(), 260.0)
-	cancel_btn.button_down.connect(func(): level_scene.camera.cancel_draw())
-	cancel_btn.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	cancel_btn.offset_left = -280
-	cancel_btn.offset_top = -72
-	cancel_btn.offset_right = -20
-	cancel_btn.offset_bottom = -18
-	hud_panel.add_child(cancel_btn)
+	var cancel_key := "cancel_hint_touch" if level_scene.camera.is_touch_mode else "cancel_hint_desktop"
+	_cancel_btn = _make_button(LocalizationManager.t(cancel_key), func(): level_scene.camera.cancel_draw(), 300.0)
+	_cancel_btn.add_theme_stylebox_override("normal", _make_medieval_style(Color(0.46, 0.14, 0.10, 0.94), Color(0.96, 0.76, 0.30), 14))
+	_cancel_btn.add_theme_stylebox_override("hover", _make_medieval_style(Color(0.58, 0.18, 0.12, 0.98), Color(1.0, 0.86, 0.36), 14))
+	_cancel_btn.button_down.connect(func(): level_scene.camera.cancel_draw())
+	_cancel_btn.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	_cancel_btn.offset_left = -330
+	_cancel_btn.offset_top = -76
+	_cancel_btn.offset_right = -20
+	_cancel_btn.offset_bottom = -18
+	_cancel_btn.visible = false
+	hud_panel.add_child(_cancel_btn)
 
 	# Circular white reticle + curved golden tension arc
 	_reticle_overlay = ReticleScript.new()
@@ -471,9 +477,16 @@ func _try_start_level(level_id: int) -> void:
 		_hud_feedback_pill.visible = false
 	level_scene.start_level(level_id)
 
+func _on_input_mode_changed(is_touch: bool) -> void:
+	if _cancel_btn != null:
+		_cancel_btn.text = LocalizationManager.t("cancel_hint_touch" if is_touch else "cancel_hint_desktop")
+
 func _on_draw_changed(ratio: float, drawing: bool) -> void:
 	if _reticle_overlay != null:
 		_reticle_overlay.set_draw_state(ratio, drawing)
+	if _cancel_btn != null:
+		_cancel_btn.visible = drawing
+		level_scene.camera.cancel_zone_rect = _cancel_btn.get_global_rect() if drawing else Rect2()
 
 func _on_hud_updated(st: Dictionary) -> void:
 	if _hud_score_lbl == null:

@@ -4,6 +4,7 @@ const ProcTex := preload("res://scripts/gameplay/procedural_textures.gd")
 
 signal draw_changed(draw_ratio: float, is_drawing: bool)
 signal shot_fired(origin: Vector3, velocity: Vector3)
+signal input_mode_changed(is_touch: bool)
 
 const MAX_DRAW_TIME := 0.85
 const FATIGUE_START_SEC := 3.5
@@ -24,10 +25,13 @@ var _top_tip := Vector3(0.0, 0.56, 0.14)
 var _bot_tip := Vector3(0.0, -0.56, 0.14)
 var _active_touch_idx: int = -1
 var _recoil: float = 0.0
+var is_touch_mode: bool = false
+var cancel_zone_rect: Rect2 = Rect2()
 
 func _ready() -> void:
 	fov = 60.0
 	position = Vector3(0.0, 1.68, 0.0)
+	is_touch_mode = DisplayServer.is_touchscreen_available()
 	_build_first_person_bow()
 
 func _build_first_person_bow() -> void:
@@ -189,12 +193,35 @@ func cancel_draw() -> void:
 		_update_bowstring(0.0)
 		emit_signal("draw_changed", 0.0, false)
 
+func _set_touch_mode(touch: bool) -> void:
+	if is_touch_mode != touch:
+		is_touch_mode = touch
+		emit_signal("input_mode_changed", is_touch_mode)
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not input_enabled:
 		return
 	var sens := float(SaveManager.get_setting("aim_sensitivity", 1.0)) * 0.0032
 
+	# Desktop cancel shortcuts: Right Mouse Button, Space, or R (works while holding LMB!)
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		_set_touch_mode(false)
+		if is_drawing:
+			cancel_draw()
+			AudioManager.play_sfx("ui_click")
+		return
+
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_SPACE or event.keycode == KEY_R:
+			_set_touch_mode(false)
+			if is_drawing:
+				cancel_draw()
+				AudioManager.play_sfx("ui_click")
+			return
+
 	if event is InputEventScreenTouch:
+		if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and event.pressed:
+			_set_touch_mode(true)
 		if event.pressed and not is_drawing:
 			_active_touch_idx = event.index
 			is_drawing = true
@@ -202,9 +229,19 @@ func _unhandled_input(event: InputEvent) -> void:
 			_hold_time = 0.0
 			AudioManager.play_sfx("bow_draw")
 		elif not event.pressed and is_drawing and event.index == _active_touch_idx:
-			_release_shot()
+			# One-handed mobile cancel: releasing inside the Cancel Shot button rect relaxes bow
+			if cancel_zone_rect.size.x > 0.0 and cancel_zone_rect.has_point(event.position):
+				cancel_draw()
+				AudioManager.play_sfx("ui_click")
+			else:
+				_release_shot()
 			_active_touch_idx = -1
-	elif event is InputEventScreenDrag and is_drawing and event.index == _active_touch_idx:
+	elif event is InputEventScreenDrag:
+		if not is_drawing or event.index == _active_touch_idx:
+			_yaw = clampf(_yaw - event.relative.x * sens, -0.65, 0.65)
+			_pitch = clampf(_pitch - event.relative.y * sens, -0.25, 0.45)
+	elif event is InputEventMouseMotion and not is_drawing:
+		_set_touch_mode(false)
 		_yaw = clampf(_yaw - event.relative.x * sens, -0.65, 0.65)
 		_pitch = clampf(_pitch - event.relative.y * sens, -0.25, 0.45)
 
@@ -243,10 +280,10 @@ func _process(delta: float) -> void:
 			var fatigue := minf(1.0, (_hold_time - FATIGUE_START_SEC) * 0.55)
 			sway_x = sin(_hold_time * 5.2) * 0.018 * fatigue
 			sway_y = cos(_hold_time * 4.1) * 0.015 * fatigue
-		if bool(SaveManager.get_setting("gyro_enabled", false)):
-			var gyro := Input.get_gyroscope()
-			_yaw = clampf(_yaw + gyro.y * delta * 0.45, -0.65, 0.65)
-			_pitch = clampf(_pitch + gyro.x * delta * 0.45, -0.25, 0.45)
+	if input_enabled and bool(SaveManager.get_setting("gyro_enabled", false)):
+		var gyro := Input.get_gyroscope()
+		_yaw = clampf(_yaw + gyro.y * delta * 0.45, -0.65, 0.65)
+		_pitch = clampf(_pitch + gyro.x * delta * 0.45, -0.25, 0.45)
 
 	rotation = Vector3(_pitch + sway_y + _recoil * 0.015, _yaw + sway_x, 0.0)
 	fov = lerpf(fov, 50.0 if is_drawing else 60.0, delta * 8.0)

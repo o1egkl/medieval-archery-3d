@@ -205,8 +205,8 @@
       "ru": "1. Управление и стрельба"
     },
     "help_controls_body": {
-      "en": "Press and hold anywhere on the screen to draw the bowstring. Drag your finger to aim, then release to fire. Tap 'Cancel Shot' to relax the bow without spending an arrow. Holding full draw longer than 3.5 seconds causes hand sway.",
-      "ru": "Удерживайте палец на экране, чтобы натянуть тетиву. Двигайте пальцем для прицеливания и отпустите для выстрела. Кнопка «Сбросить натяжение» отменяет выстрел без траты стрелы. Переудержание тетивы дольше 3,5 секунд вызывает покачивание рук."
+      "en": "Desktop: Move the mouse freely to aim. Hold Left Mouse Button (LMB) to draw and release to fire. Press Right Mouse Button (RMB), Space, or R while holding to relax the bow without spending an arrow.\nMobile / Android: Drag to aim, hold to draw, release to fire. Tap '✕ Relax Bow' with your other thumb — or drag your finger onto '✕ Relax Bow' and release — to cancel the shot. Holding full draw past 3.5s causes hand sway.",
+      "ru": "ПК / браузер: свободно двигайте мышью для наведения. Зажмите ЛКМ для натяжения и отпустите для выстрела. Чтобы снять тетиву без траты стрелы — нажмите ПКМ, Пробел или R, не отпуская ЛКМ.\nСмартфон / Android: ведите пальцем для прицеливания, удерживайте для натяжения и отпустите для выстрела. Для отмены нажмите вторым пальцем на «✕ Снять тетиву» или переведите удерживаемый палец на эту кнопку и отпустите. Переудержание дольше 3,5 с вызывает покачивание рук."
     },
     "help_ballistics_title": {
       "en": "2. Gravity & Wind",
@@ -231,6 +231,14 @@
     "help_attempts_body": {
       "en": "You start with 10 attempts every morning at 06:00. Winning a level NEVER spends an attempt — only failing does. Earn up to +3 daily bonus attempts for 3-star wins, 3 bullseyes in a row, or finishing with 2+ arrows left, plus +2 one-time attempts for beating each biome boss (levels 5, 10, 15, 20). The Paid edition removes all limits.",
       "ru": "Каждое утро в 06:00 обновляются 10 попыток. Победа НЕ тратит попытку — списываются только проигрыши. Можно получить до +3 бонусных попыток в день (за 3 звезды, 3 яблочка подряд или победу с запасом 2+ стрел), а также разово +2 попытки за босса каждого биома (уровни 5, 10, 15, 20). В платной версии лимита нет."
+    },
+    "cancel_hint_desktop": {
+      "en": "RMB / Space — Relax Bow",
+      "ru": "ПКМ / Пробел — Снять тетиву"
+    },
+    "cancel_hint_touch": {
+      "en": "✕ Relax Bow",
+      "ru": "✕ Снять тетиву"
     }
   }
 }
