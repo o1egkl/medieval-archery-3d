@@ -51,7 +51,7 @@ func _build_mesh() -> void:
 		barrel.mesh = mesh
 		barrel.material_override = wood_mat
 		_pivot.add_child(barrel)
-		for band_y in [-radius * 0.55, radius * 0.55]:
+		for band_y: float in [-radius * 0.55, radius * 0.55]:
 			var band := MeshInstance3D.new()
 			var bm := CylinderMesh.new()
 			bm.top_radius = radius * 0.88
@@ -165,7 +165,7 @@ func _build_mesh() -> void:
 		beam.mesh = bm
 		beam.material_override = wood_mat
 		_rail_beam.add_child(beam)
-		for side in [-1.0, 1.0]:
+		for side: float in [-1.0, 1.0]:
 			var post := MeshInstance3D.new()
 			var pm := BoxMesh.new()
 			pm.size = Vector3(0.24, 0.84, 0.24)

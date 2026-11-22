@@ -136,7 +136,7 @@ func _build_first_person_bow() -> void:
 
 	var fletch_mat := StandardMaterial3D.new()
 	fletch_mat.albedo_color = Color(0.92, 0.86, 0.76)
-	for ang in [0.0, 60.0, -60.0]:
+	for ang: float in [0.0, 60.0, -60.0]:
 		var vane := MeshInstance3D.new()
 		var vm := BoxMesh.new()
 		vm.size = Vector3(0.055, 0.004, 0.12)

@@ -236,8 +236,8 @@ func _build_biome(biome: String) -> void:
 			_build_torch(Vector3(6.0, 0.0, -22.0))
 		"fortress":
 			_build_castle(Vector3(0.0, 0.0, -78.0))
-			for tx in [-7.0, 7.0]:
-				for tz in [-18.0, -38.0, -56.0]:
+			for tx: float in [-7.0, 7.0]:
+				for tz: float in [-18.0, -38.0, -56.0]:
 					_build_torch(Vector3(tx, 0.0, tz))
 			if quality != "low":
 				var rain := CPUParticles3D.new()
@@ -258,10 +258,10 @@ func _build_fences() -> void:
 	var wood_mat := StandardMaterial3D.new()
 	wood_mat.albedo_texture = ProcTex.get_wood_texture()
 	wood_mat.roughness = 0.88
-	for side in [-1.0, 1.0]:
-		var x := side * 9.5
+	for side: float in [-1.0, 1.0]:
+		var x: float = side * 9.5
 		for i in range(14):
-			var z := -8.0 - float(i) * 4.8
+			var z: float = -8.0 - float(i) * 4.8
 			var post := MeshInstance3D.new()
 			var pm := BoxMesh.new()
 			pm.size = Vector3(0.18, 1.25, 0.18)
@@ -269,7 +269,7 @@ func _build_fences() -> void:
 			post.position = Vector3(x, 0.62, z)
 			post.material_override = wood_mat
 			_env_root.add_child(post)
-			for ry in [0.42, 0.96]:
+			for ry: float in [0.42, 0.96]:
 				var rail := MeshInstance3D.new()
 				var rm := BoxMesh.new()
 				rm.size = Vector3(0.10, 0.12, 4.8)
@@ -283,8 +283,8 @@ func _build_wind_flags() -> void:
 	wood_mat.albedo_texture = ProcTex.get_wood_texture()
 	var colors := [Color(0.82, 0.18, 0.16), Color(0.16, 0.40, 0.82), Color(0.92, 0.76, 0.18)]
 	var idx := 0
-	for side in [-1.0, 1.0]:
-		for dist in [16.0, 32.0, 48.0]:
+	for side: float in [-1.0, 1.0]:
+		for dist: float in [16.0, 32.0, 48.0]:
 			var pole := MeshInstance3D.new()
 			var pcyl := CylinderMesh.new()
 			pcyl.top_radius = 0.06
@@ -384,8 +384,8 @@ func _build_castle(pos: Vector3) -> void:
 	root.add_child(gate)
 
 	# 4 medieval stone towers with conical roofs
-	for tx in [-15.0, -5.5, 5.5, 15.0]:
-		var h := 16.5 if absf(tx) < 10.0 else 14.0
+	for tx: float in [-15.0, -5.5, 5.5, 15.0]:
+		var h: float = 16.5 if absf(tx) < 10.0 else 14.0
 		var tower := MeshInstance3D.new()
 		var tm := CylinderMesh.new()
 		tm.top_radius = 2.6
@@ -429,7 +429,7 @@ func _build_windmill(pos: Vector3) -> void:
 	root.add_child(_windmill_blades)
 	var wood_mat := StandardMaterial3D.new()
 	wood_mat.albedo_texture = ProcTex.get_wood_texture()
-	for ang in [0.0, 90.0]:
+	for ang: float in [0.0, 90.0]:
 		var blade := MeshInstance3D.new()
 		var blm := BoxMesh.new()
 		blm.size = Vector3(0.65, 9.2, 0.14)

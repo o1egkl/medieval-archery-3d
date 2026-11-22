@@ -391,11 +391,11 @@ func _build_hud() -> void:
 	menu_btn.offset_bottom = 68
 	hud_panel.add_child(menu_btn)
 
-	var cancel_btn := _make_button(LocalizationManager.t("btn_cancel_shot"), func(): level_scene.camera.cancel_draw(), 210.0)
+	var cancel_btn := _make_button(LocalizationManager.t("btn_cancel_shot"), func(): level_scene.camera.cancel_draw(), 260.0)
 	cancel_btn.button_down.connect(func(): level_scene.camera.cancel_draw())
 	cancel_btn.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	cancel_btn.offset_left = -230
-	cancel_btn.offset_top = -70
+	cancel_btn.offset_left = -280
+	cancel_btn.offset_top = -72
 	cancel_btn.offset_right = -20
 	cancel_btn.offset_bottom = -18
 	hud_panel.add_child(cancel_btn)
