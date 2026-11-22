@@ -11,6 +11,15 @@ static func _load_tex(path: String) -> Texture2D:
 		if res is Texture2D:
 			_tex_cache[path] = res
 			return res
+	# Fallback: load directly from disk if Godot hasn't generated .import files yet (e.g. direct Windows CLI run)
+	var abs_path := ProjectSettings.globalize_path(path)
+	if FileAccess.file_exists(abs_path):
+		var img := Image.new()
+		if img.load(abs_path) == OK:
+			img.generate_mipmaps()
+			var tex := ImageTexture.create_from_image(img)
+			_tex_cache[path] = tex
+			return tex
 	return null
 
 static func get_sky_texture(biome: String) -> Texture2D:
@@ -38,12 +47,12 @@ static func get_pbr_material(name_key: String, uv_scale: Vector3 = Vector3.ONE, 
 	if nrm != null:
 		mat.normal_enabled = true
 		mat.normal_texture = nrm
-		mat.normal_scale = 0.9
+		mat.normal_scale = 0.85
 	var rgh := _load_tex("res://assets/textures/%s_roughness.jpg" % name_key)
 	if rgh != null:
 		mat.roughness_texture = rgh
 	else:
-		mat.roughness = 0.85
+		mat.roughness = 0.88
 
 	_mat_cache[cache_id] = mat
 	return mat
@@ -58,8 +67,8 @@ static func make_ground_shader_material(biome_tint: Color) -> ShaderMaterial:
 	mat.set_shader_parameter("dirt_albedo", _load_tex("res://assets/textures/dirt_albedo.jpg"))
 	mat.set_shader_parameter("dirt_normal", _load_tex("res://assets/textures/dirt_normal.jpg"))
 	mat.set_shader_parameter("dirt_roughness", _load_tex("res://assets/textures/dirt_roughness.jpg"))
-	mat.set_shader_parameter("grass_tint", Color(0.76, 1.06, 0.62) * biome_tint)
-	mat.set_shader_parameter("dirt_tint", Color(1.05, 0.94, 0.78) * biome_tint)
+	mat.set_shader_parameter("grass_tint", Color(0.56, 0.82, 0.42) * biome_tint)
+	mat.set_shader_parameter("dirt_tint", Color(0.74, 0.63, 0.48) * biome_tint)
 	mat.set_shader_parameter("uv_scale", 30.0)
 	return mat
 

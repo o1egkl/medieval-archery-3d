@@ -21,11 +21,13 @@ start "" "builds\windows\MedievalArchery3D.exe"
 exit /b 0
 
 :run_godot
+if not exist ".godot" godot --headless --import --quit >nul 2>nul
 echo Launching in local Godot 4...
 start "" godot --path .
 exit /b 0
 
 :run_godot4
+if not exist ".godot" godot4 --headless --import --quit >nul 2>nul
 echo Launching in local Godot 4...
 start "" godot4 --path .
 exit /b 0

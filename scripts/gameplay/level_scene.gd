@@ -111,7 +111,7 @@ func _build_biome(biome: String) -> void:
 	var sky_mat := PanoramaSkyMaterial.new()
 	if sky_tex != null:
 		sky_mat.panorama = sky_tex
-		sky_mat.energy_multiplier = 1.15 if biome != "fortress" else 0.75
+		sky_mat.energy_multiplier = 0.82 if biome != "fortress" else 0.55
 
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-34.0, 32.0, 0.0)
@@ -122,16 +122,16 @@ func _build_biome(biome: String) -> void:
 	match biome:
 		"village":
 			light.light_color = Color(1.0, 0.96, 0.86)
-			light.light_energy = 1.05
+			light.light_energy = 0.90
 		"tournament":
 			light.light_color = Color(1.0, 0.95, 0.82)
-			light.light_energy = 1.10
+			light.light_energy = 0.94
 		"forest":
 			env.fog_enabled = true
 			env.fog_light_color = Color(0.72, 0.48, 0.36)
 			env.fog_density = 0.008
 			light.light_color = Color(1.0, 0.72, 0.48)
-			light.light_energy = 1.05
+			light.light_energy = 0.90
 			ground_tint = Color(0.72, 0.74, 0.62)
 		"fortress":
 			env.fog_enabled = true
@@ -144,15 +144,16 @@ func _build_biome(biome: String) -> void:
 	sky.sky_material = sky_mat
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.50 if biome != "fortress" else 0.35
+	env.ambient_light_energy = 0.28 if biome != "fortress" else 0.22
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
-	env.glow_enabled = (quality != "low")
-	env.glow_intensity = 0.25
-	env.glow_bloom = 0.08
+	env.tonemap_exposure = 0.82
+	env.glow_enabled = (biome == "fortress" and quality != "low")
+	env.glow_intensity = 0.22
+	env.glow_bloom = 0.05
 	if not env.fog_enabled:
 		env.fog_enabled = true
-		env.fog_light_color = Color(0.76, 0.86, 0.96)
-		env.fog_density = 0.0038
+		env.fog_light_color = Color(0.68, 0.78, 0.88)
+		env.fog_density = 0.0009
 	world_env.environment = env
 	_env_root.add_child(world_env)
 	_env_root.add_child(light)
@@ -244,15 +245,24 @@ func _build_grass_tufts(count: int, tint: Color) -> void:
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.instance_count = count
 
-	# Simple lightweight grass blade quad
-	var blade := QuadMesh.new()
-	blade.size = Vector2(0.18, 0.38)
+	# Tapered 3-blade pointed grass tuft (ArrayMesh, no rectangular cards)
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for ang_deg: float in [0.0, 60.0, 120.0]:
+		var rad := deg_to_rad(ang_deg)
+		var c := cos(rad) * 0.075
+		var s := sin(rad) * 0.075
+		st.set_normal(Vector3(-sin(rad), 0.3, cos(rad)).normalized())
+		st.add_vertex(Vector3(-c, 0.0, -s))
+		st.add_vertex(Vector3(c, 0.0, s))
+		st.add_vertex(Vector3(0.0, 0.34, 0.0))
+	var tuft_mesh := st.commit()
 	var gmat := StandardMaterial3D.new()
-	gmat.albedo_color = Color(0.28, 0.52, 0.16) * tint
+	gmat.albedo_color = Color(0.20, 0.38, 0.12) * tint
 	gmat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	gmat.roughness = 0.88
-	blade.material = gmat
-	mm.mesh = blade
+	gmat.roughness = 0.92
+	tuft_mesh.surface_set_material(0, gmat)
+	mm.mesh = tuft_mesh
 
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 2026
@@ -266,7 +276,7 @@ func _build_grass_tufts(count: int, tint: Color) -> void:
 		var rot_y: float = rng.randf_range(0.0, TAU)
 		var tilt_x: float = rng.randf_range(-0.22, 0.22)
 		var basis := Basis.from_euler(Vector3(tilt_x, rot_y, 0.0)).scaled(Vector3(1.0, h_scale, 1.0))
-		mm.set_instance_transform(i, Transform3D(basis, Vector3(x, 0.16 * h_scale, z)))
+		mm.set_instance_transform(i, Transform3D(basis, Vector3(x, 0.0, z)))
 
 	mm_inst.multimesh = mm
 	_env_root.add_child(mm_inst)
