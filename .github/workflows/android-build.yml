@@ -26,16 +26,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Prepare Godot export templates & debug keystore
+      - name: Prepare Godot templates, Android SDK config & debug keystore
         run: |
-          mkdir -p ~/.local/share/godot/export_templates
-          mkdir -p builds
+          mkdir -p ~/.local/share/godot/export_templates ~/.config/godot builds
           if [ -d /root/.local/share/godot/export_templates ]; then
             cp -rn /root/.local/share/godot/export_templates/* ~/.local/share/godot/export_templates/ || true
           fi
-          if [ ! -f /root/debug.keystore ]; then
-            keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android               -keystore /root/debug.keystore -storepass android               -dname "CN=Android Debug,O=Android,C=US" -validity 9999 -deststoretype pkcs12
+          if [ -d /root/.config/godot ]; then
+            cp -rn /root/.config/godot/* ~/.config/godot/ || true
           fi
+          if [ ! -f /tmp/debug.keystore ]; then
+            keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android               -keystore /tmp/debug.keystore -storepass android               -dname "CN=Android Debug,O=Android,C=US" -validity 9999 -deststoretype pkcs12
+          fi
+          sed -i 's|keystore/debug=""|keystore/debug="/tmp/debug.keystore"|g' export_presets.cfg
 
       - name: Pre-heat project (.godot import cache)
         run: godot --headless --import --quit || true
@@ -66,8 +69,7 @@ jobs:
 
       - name: Prepare Godot export templates
         run: |
-          mkdir -p ~/.local/share/godot/export_templates
-          mkdir -p builds/web
+          mkdir -p ~/.local/share/godot/export_templates ~/.config/godot builds/web
           if [ -d /root/.local/share/godot/export_templates ]; then
             cp -rn /root/.local/share/godot/export_templates/* ~/.local/share/godot/export_templates/ || true
           fi
@@ -111,7 +113,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Decode Release Keystore from Secrets
+      - name: Prepare Godot templates & decode Release Keystore
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
           KEYSTORE_USER: ${{ secrets.ANDROID_RELEASE_KEYSTORE_USER }}
@@ -121,7 +123,9 @@ jobs:
             echo "::error::Missing Android signing secrets (ANDROID_RELEASE_KEYSTORE_BASE64, ANDROID_RELEASE_KEYSTORE_USER, ANDROID_RELEASE_KEYSTORE_PASSWORD)."
             exit 1
           fi
-          mkdir -p builds
+          mkdir -p ~/.local/share/godot/export_templates ~/.config/godot builds
+          cp -rn /root/.local/share/godot/export_templates/* ~/.local/share/godot/export_templates/ || true
+          cp -rn /root/.config/godot/* ~/.config/godot/ || true
           echo "$KEYSTORE_B64" | base64 --decode > /tmp/release.keystore
           sed -i "s|keystore/release=""|keystore/release="/tmp/release.keystore"|g" export_presets.cfg
           sed -i "s|keystore/release_user=""|keystore/release_user="${KEYSTORE_USER}"|g" export_presets.cfg

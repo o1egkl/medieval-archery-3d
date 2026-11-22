@@ -51,6 +51,7 @@ func _rebuild_all_ui(_unused = null) -> void:
 		prev_visible = "hud"
 
 	for c in ui_layer.get_children():
+		ui_layer.remove_child(c)
 		c.queue_free()
 
 	_build_menu()
@@ -337,6 +338,7 @@ func _build_hud() -> void:
 	hud_panel.add_child(menu_btn)
 
 	var cancel_btn := _make_button(LocalizationManager.t("btn_cancel_shot"), func(): level_scene.camera.cancel_draw(), 200.0)
+	cancel_btn.button_down.connect(func(): level_scene.camera.cancel_draw())
 	cancel_btn.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
 	cancel_btn.offset_left = -224
 	cancel_btn.offset_top = -72

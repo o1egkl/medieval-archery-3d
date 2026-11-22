@@ -14,7 +14,7 @@ var _session_start_ticks_ms: int = 0
 func _ready() -> void:
 	_session_start_unix = int(Time.get_unix_time_from_system())
 	_session_start_ticks_ms = Time.get_ticks_msec()
-	refresh_if_needed()
+	refresh_if_needed(false)
 
 func _get_effective_unix_time() -> int:
 	var elapsed_sec := int((Time.get_ticks_msec() - _session_start_ticks_ms) / 1000)
@@ -32,26 +32,30 @@ func _get_game_day_key() -> String:
 	var dt := Time.get_datetime_dict_from_unix_time(shifted)
 	return "%04d-%02d-%02d" % [dt["year"], dt["month"], dt["day"]]
 
-func refresh_if_needed() -> void:
+func refresh_if_needed(notify: bool = true) -> void:
 	if GameConfig.is_paid_build():
 		return
 	var state: Dictionary = SaveManager.data["attempts"]
 	var today := _get_game_day_key()
 	var now_unix := _get_effective_unix_time()
+	var changed := false
 	if str(state.get("day_key", "")) != today:
 		state["day_key"] = today
 		state["remaining"] = DAILY_BASE_ATTEMPTS
 		state["daily_bonus_earned"] = 0
 		state["perfect_count_today"] = 0
 		state["economy_count_today"] = 0
+		changed = true
 	state["last_unix_time"] = now_unix
-	SaveManager.save()
-	emit_signal("attempts_changed", get_remaining())
+	if changed:
+		SaveManager.save()
+		if notify:
+			emit_signal("attempts_changed", int(state["remaining"]))
 
 func get_remaining() -> int:
 	if GameConfig.is_paid_build():
 		return 999
-	refresh_if_needed()
+	refresh_if_needed(false)
 	return int(SaveManager.data["attempts"].get("remaining", DAILY_BASE_ATTEMPTS))
 
 func can_play() -> bool:
@@ -62,7 +66,7 @@ func can_play() -> bool:
 func consume_on_fail() -> void:
 	if GameConfig.is_paid_build():
 		return
-	refresh_if_needed()
+	refresh_if_needed(false)
 	var state: Dictionary = SaveManager.data["attempts"]
 	state["remaining"] = max(0, int(state["remaining"]) - 1)
 	state["last_unix_time"] = _get_effective_unix_time()
@@ -73,7 +77,7 @@ func evaluate_win_bonuses(level_id: int, stars: int, max_bullseye_streak: int, a
 	var awarded_keys: Array[String] = []
 	if GameConfig.is_paid_build():
 		return awarded_keys
-	refresh_if_needed()
+	refresh_if_needed(false)
 	var state: Dictionary = SaveManager.data["attempts"]
 	var bonus_earned := int(state.get("daily_bonus_earned", 0))
 

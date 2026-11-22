@@ -57,7 +57,7 @@ func launch(start_pos: Vector3, initial_velocity: Vector3, wind_speed_x: float) 
 	wind_x = wind_speed_x
 	is_flying = true
 	_flight_time = 0.0
-	if velocity.length() > 0.1:
+	if velocity.length() > 0.1 and absf(velocity.normalized().dot(Vector3.UP)) < 0.99:
 		look_at(global_position + velocity, Vector3.UP)
 
 func _physics_process(delta: float) -> void:
@@ -96,5 +96,5 @@ func _physics_process(delta: float) -> void:
 		return
 
 	global_position = next_pos
-	if velocity.length() > 0.1:
+	if velocity.length() > 0.1 and absf(velocity.normalized().dot(Vector3.UP)) < 0.99:
 		look_at(global_position + velocity, Vector3.UP)
