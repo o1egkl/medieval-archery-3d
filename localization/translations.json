@@ -221,8 +221,8 @@
       "ru": "3. Очки и звёзды"
     },
     "help_scoring_body": {
-      "en": "Bullseye = 100 pts, Inner = 60, Middle = 30, Outer = 10. Consecutive hits build a Combo multiplier (up to x3). Avoid red penalty shields (-50 pts). Unused arrows award bonus points.",
-      "ru": "Яблочко = 100 оч., внутреннее кольцо = 60, среднее = 30, внешнее = 10. Серия попаданий даёт множитель до x3. Избегайте штрафных щитов (-50 оч.). Оставшиеся стрелы добавляют бонусные очки."
+      "en": "Bullseye = 100 pts, Inner = 60, Middle = 30, Outer = 10. Targets knock down after 2 hits — or immediately in 1 shot on a Bullseye! Clearing every target on a level awards +100 bonus pts. Consecutive hits build Combo (up to x3). Avoid red penalty shields (-50 pts).",
+      "ru": "Яблочко = 100 оч., внутреннее кольцо = 60, среднее = 30, внешнее = 10. Мишень опрокидывается после 2 попаданий — либо сразу с 1 выстрела при попадании в Яблочко! Зачистка всех целей уровня даёт +100 бонусных очков. Серия попаданий даёт множитель до x3. Избегайте красных щитов (-50 оч.)."
     },
     "help_attempts_title": {
       "en": "4. Daily Attempts (Free Edition)",
@@ -239,6 +239,10 @@
     "cancel_hint_touch": {
       "en": "✕ Relax Bow",
       "ru": "✕ Снять тетиву"
+    },
+    "hit_all_cleared": {
+      "en": "ALL TARGETS CLEARED! +{pts}",
+      "ru": "ВСЕ ЦЕЛИ ПОРАЖЕНЫ! +{pts}"
     }
   }
 }

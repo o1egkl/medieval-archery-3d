@@ -2,13 +2,19 @@ extends Node3D
 
 const PbrAssets := preload("res://scripts/gameplay/pbr_assets.gd")
 
+signal target_knocked_down(target_node: Node3D)
+
 var target_type: String = "static"
 var radius: float = 0.75
 var move_speed: float = 0.0
 var amplitude: float = 0.0
 var base_pos: Vector3 = Vector3.ZERO
 var _time: float = 0.0
+var max_hits: int = 0
+var current_hits: int = 0
+var is_knocked_down: bool = false
 var _pivot: Node3D
+var _col_shape: CollisionShape3D
 var _rail_beam: Node3D
 
 func setup(cfg: Dictionary) -> void:
@@ -16,6 +22,9 @@ func setup(cfg: Dictionary) -> void:
 	radius = float(cfg.get("radius", 0.75))
 	move_speed = float(cfg.get("speed", 0.0))
 	amplitude = float(cfg.get("amplitude", 0.0))
+	max_hits = int(cfg.get("max_hits", 0))
+	current_hits = 0
+	is_knocked_down = false
 	base_pos = Vector3(float(cfg.get("x", 0.0)), float(cfg.get("y", 1.7)), float(cfg.get("z", -25.0)))
 	position = base_pos
 	_build_mesh()
@@ -29,13 +38,13 @@ func _build_mesh() -> void:
 
 	var body := StaticBody3D.new()
 	_pivot.add_child(body)
-	var col := CollisionShape3D.new()
+	_col_shape = CollisionShape3D.new()
 	var shape := CylinderShape3D.new()
 	shape.radius = radius
 	shape.height = 0.28
-	col.shape = shape
-	col.rotation_degrees.x = 90.0
-	body.add_child(col)
+	_col_shape.shape = shape
+	_col_shape.rotation_degrees.x = 90.0
+	body.add_child(_col_shape)
 
 	var wood_mat := _make_wood_mat()
 
@@ -178,7 +187,12 @@ func _build_mesh() -> void:
 			_rail_beam.add_child(post)
 		get_parent().add_child(_rail_beam)
 
+func get_stick_parent() -> Node:
+	return _pivot if _pivot != null else self
+
 func _process(delta: float) -> void:
+	if is_knocked_down:
+		return
 	_time += delta
 	match target_type:
 		"rail":
@@ -223,10 +237,13 @@ func _spawn_hit_burst(local_hit: Vector3, is_bullseye: bool) -> void:
 	)
 
 func evaluate_hit(world_hit_pos: Vector3) -> Dictionary:
+	if is_knocked_down:
+		return {"hit": false, "points": 0, "kind": "miss", "bullseye": false, "norm_pos": Vector2.ZERO}
 	var local_pos := _pivot.to_local(world_hit_pos)
 	if target_type == "barrel_bonus":
 		_spawn_hit_burst(local_pos, true)
-		return {"hit": true, "points": 75, "kind": "barrel", "bullseye": false, "norm_pos": Vector2.ZERO}
+		_apply_damage(1)
+		return {"hit": true, "points": 75, "kind": "barrel", "bullseye": false, "norm_pos": Vector2.ZERO, "knocked_down": is_knocked_down}
 	if target_type == "shield_penalty":
 		_spawn_hit_burst(local_pos, false)
 		return {"hit": true, "points": -50, "kind": "penalty", "bullseye": false, "norm_pos": Vector2.ZERO}
@@ -235,15 +252,50 @@ func evaluate_hit(world_hit_pos: Vector3) -> Dictionary:
 	var norm_vec := Vector2(local_pos.x / safe_r, -local_pos.y / safe_r)
 	var norm: float = norm_vec.length()
 
+	var res: Dictionary
 	if norm <= 0.28:
 		_spawn_hit_burst(local_pos, true)
-		return {"hit": true, "points": 100, "kind": "bullseye", "bullseye": true, "norm_pos": norm_vec}
+		res = {"hit": true, "points": 100, "kind": "bullseye", "bullseye": true, "norm_pos": norm_vec}
 	elif norm <= 0.50:
 		_spawn_hit_burst(local_pos, false)
-		return {"hit": true, "points": 60, "kind": "ring", "bullseye": false, "norm_pos": norm_vec}
+		res = {"hit": true, "points": 60, "kind": "ring", "bullseye": false, "norm_pos": norm_vec}
 	elif norm <= 0.74:
 		_spawn_hit_burst(local_pos, false)
-		return {"hit": true, "points": 30, "kind": "ring", "bullseye": false, "norm_pos": norm_vec}
+		res = {"hit": true, "points": 30, "kind": "ring", "bullseye": false, "norm_pos": norm_vec}
 	else:
 		_spawn_hit_burst(local_pos, false)
-		return {"hit": true, "points": 10, "kind": "ring", "bullseye": false, "norm_pos": norm_vec}
+		res = {"hit": true, "points": 10, "kind": "ring", "bullseye": false, "norm_pos": norm_vec}
+	_apply_damage(2 if bool(res["bullseye"]) else 1)
+	res["knocked_down"] = is_knocked_down
+	return res
+
+func _apply_damage(dmg: int) -> void:
+	if max_hits <= 0 or is_knocked_down:
+		return
+	current_hits += dmg
+	if current_hits >= max_hits:
+		_knock_down()
+	else:
+		_tilt_damaged()
+
+func _tilt_damaged() -> void:
+	var tw := create_tween()
+	tw.tween_property(_pivot, "rotation_degrees:x", -20.0, 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_pivot, "rotation_degrees:x", -12.0, 0.16).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+
+func _knock_down() -> void:
+	is_knocked_down = true
+	if _col_shape != null:
+		_col_shape.set_deferred("disabled", true)
+	AudioManager.play_sfx("target_fall")
+	var tw := create_tween().set_parallel(true)
+	if target_type == "pendulum":
+		tw.tween_property(_pivot, "rotation_degrees:x", -78.0, 0.42).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		tw.tween_property(_pivot, "position:y", -1.4, 0.42).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	elif target_type == "popup":
+		tw.tween_property(_pivot, "rotation_degrees:x", -84.0, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(self, "position:y", base_pos.y - maxf(amplitude, 1.4), 0.38).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	else:
+		tw.tween_property(_pivot, "rotation_degrees:x", -84.0, 0.48).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+		tw.tween_property(_pivot, "position:y", -base_pos.y * 0.42, 0.48).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	emit_signal("target_knocked_down", self)

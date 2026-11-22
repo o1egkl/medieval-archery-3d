@@ -20,6 +20,7 @@ func _build_procedural_sfx() -> void:
 	_sfx_cache["hit_target"] = _make_tone(190.0, 90.0, 0.12, 0.45)
 	_sfx_cache["hit_bullseye"] = _make_tone(880.0, 1320.0, 0.22, 0.35)
 	_sfx_cache["hit_penalty"] = _make_tone(240.0, 110.0, 0.25, 0.4)
+	_sfx_cache["target_fall"] = _make_tone(125.0, 52.0, 0.26, 0.50)
 	_sfx_cache["win"] = _make_tone(523.0, 784.0, 0.35, 0.35)
 	_sfx_cache["fail"] = _make_tone(310.0, 180.0, 0.38, 0.35)
 

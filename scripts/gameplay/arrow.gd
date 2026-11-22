@@ -91,9 +91,10 @@ func _physics_process(delta: float) -> void:
 			target_node = target_node.get_parent()
 		if target_node != null:
 			var res: Dictionary = target_node.evaluate_hit(hit["position"])
-			# Stick arrow to moving or static target
+			# Stick arrow to target pivot so it tilts and falls together with the target
+			var stick_parent: Node = target_node.get_stick_parent() if target_node.has_method("get_stick_parent") else target_node
 			var saved_global := global_transform
-			reparent(target_node)
+			reparent(stick_parent)
 			global_transform = saved_global
 			emit_signal("arrow_resolved", res)
 		else:

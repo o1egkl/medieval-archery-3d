@@ -509,6 +509,8 @@ func _on_hit_feedback(kind: String, pts: int, norm_pos: Vector2) -> void:
 			_hud_feedback_lbl.text = LocalizationManager.t("hit_barrel", {"pts": pts})
 		"penalty":
 			_hud_feedback_lbl.text = LocalizationManager.t("hit_penalty", {"pts": pts})
+		"all_cleared":
+			_hud_feedback_lbl.text = LocalizationManager.t("hit_all_cleared", {"pts": pts})
 		_:
 			_hud_feedback_lbl.text = LocalizationManager.t("hit_ring", {"pts": pts})
 	if _hud_feedback_pill != null:

@@ -29,6 +29,8 @@ var bullseye_streak: int = 0
 var max_bullseye_streak: int = 0
 var active_arrows: int = 0
 var level_active: bool = false
+var _knockable_targets_left: int = 0
+var _all_cleared_awarded: bool = false
 var _wind_timer: float = 0.0
 
 func _ready() -> void:
@@ -73,6 +75,8 @@ func start_level(level_id: int) -> void:
 	max_bullseye_streak = 0
 	active_arrows = 0
 	level_active = true
+	_knockable_targets_left = 0
+	_all_cleared_awarded = false
 
 	wind_dir = -1.0 if randf() < 0.5 else 1.0
 	wind_speed = randf_range(float(level_cfg.get("wind_min", 0.0)), float(level_cfg.get("wind_max", 0.0))) * wind_dir
@@ -82,6 +86,9 @@ func start_level(level_id: int) -> void:
 		var t := TargetScript.new()
 		_targets_root.add_child(t)
 		t.setup(tcfg)
+		if t.max_hits > 0:
+			_knockable_targets_left += 1
+			t.target_knocked_down.connect(_on_target_knocked_down)
 
 	camera.reset_aim()
 	camera.input_enabled = true
@@ -598,11 +605,21 @@ func _process(delta: float) -> void:
 		if time_left <= 0.0:
 			_finish_level()
 
+func _on_target_knocked_down(_t: Node3D) -> void:
+	_knockable_targets_left = maxi(0, _knockable_targets_left - 1)
+	if _knockable_targets_left == 0 and not _all_cleared_awarded and level_active:
+		_all_cleared_awarded = true
+		score += 100
+		emit_signal("hit_feedback", "all_cleared", 100, Vector2.ZERO)
+		_emit_hud()
+
 func _check_end_condition() -> void:
 	if not level_active:
 		return
 	var target_score := int(level_cfg.get("target_score", 150))
 	if arrows_left <= 0 and active_arrows <= 0:
+		_finish_level()
+	elif _all_cleared_awarded and active_arrows <= 0:
 		_finish_level()
 	elif score >= int(level_cfg.get("star3_score", target_score * 2)) and active_arrows <= 0:
 		_finish_level()

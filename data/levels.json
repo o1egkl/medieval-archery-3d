@@ -22,7 +22,8 @@
           "z": -15.0,
           "radius": 0.85,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 0
         }
       ]
     },
@@ -47,7 +48,8 @@
           "z": -19.0,
           "radius": 0.8,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "static",
@@ -56,7 +58,8 @@
           "z": -21.0,
           "radius": 0.8,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         }
       ]
     },
@@ -81,7 +84,8 @@
           "z": -23.0,
           "radius": 0.85,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "static",
@@ -90,7 +94,8 @@
           "z": -25.0,
           "radius": 0.72,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "static",
@@ -99,7 +104,8 @@
           "z": -26.0,
           "radius": 0.65,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         }
       ]
     },
@@ -124,7 +130,8 @@
           "z": -29.0,
           "radius": 0.75,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "barrel_bonus",
@@ -133,7 +140,8 @@
           "z": -27.0,
           "radius": 0.55,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 1
         },
         {
           "type": "static",
@@ -142,7 +150,8 @@
           "z": -31.0,
           "radius": 0.75,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         }
       ]
     },
@@ -167,7 +176,8 @@
           "z": -33.0,
           "radius": 0.75,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "rail",
@@ -176,7 +186,8 @@
           "z": -35.0,
           "radius": 0.75,
           "speed": 0.9,
-          "amplitude": 2.6
+          "amplitude": 2.6,
+          "max_hits": 2
         },
         {
           "type": "static",
@@ -185,7 +196,8 @@
           "z": -33.0,
           "radius": 0.75,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         }
       ]
     },
@@ -210,7 +222,8 @@
           "z": -29.0,
           "radius": 0.75,
           "speed": 1.0,
-          "amplitude": 2.2
+          "amplitude": 2.2,
+          "max_hits": 2
         },
         {
           "type": "rail",
@@ -219,7 +232,8 @@
           "z": -32.0,
           "radius": 0.72,
           "speed": 1.15,
-          "amplitude": 2.4
+          "amplitude": 2.4,
+          "max_hits": 2
         }
       ]
     },
@@ -244,7 +258,8 @@
           "z": -32.0,
           "radius": 0.75,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "pendulum",
@@ -253,7 +268,8 @@
           "z": -35.0,
           "radius": 0.72,
           "speed": 1.3,
-          "amplitude": 2.4
+          "amplitude": 2.4,
+          "max_hits": 2
         },
         {
           "type": "static",
@@ -262,7 +278,8 @@
           "z": -34.0,
           "radius": 0.75,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         }
       ]
     },
@@ -287,7 +304,8 @@
           "z": -40.0,
           "radius": 0.75,
           "speed": 1.2,
-          "amplitude": 3.0
+          "amplitude": 3.0,
+          "max_hits": 2
         },
         {
           "type": "shield_penalty",
@@ -296,7 +314,8 @@
           "z": -37.0,
           "radius": 0.65,
           "speed": 1.6,
-          "amplitude": 2.6
+          "amplitude": 2.6,
+          "max_hits": 0
         },
         {
           "type": "static",
@@ -305,7 +324,8 @@
           "z": -39.0,
           "radius": 0.7,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         }
       ]
     },
@@ -330,7 +350,8 @@
           "z": -43.0,
           "radius": 0.75,
           "speed": 1.35,
-          "amplitude": 3.5
+          "amplitude": 3.5,
+          "max_hits": 2
         },
         {
           "type": "rail",
@@ -339,7 +360,8 @@
           "z": -46.0,
           "radius": 0.72,
           "speed": -1.45,
-          "amplitude": 3.5
+          "amplitude": 3.5,
+          "max_hits": 2
         },
         {
           "type": "barrel_bonus",
@@ -348,7 +370,8 @@
           "z": -42.0,
           "radius": 0.55,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 1
         }
       ]
     },
@@ -373,7 +396,8 @@
           "z": -47.0,
           "radius": 0.72,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "rail",
@@ -382,7 +406,8 @@
           "z": -50.0,
           "radius": 0.72,
           "speed": 1.4,
-          "amplitude": 2.4
+          "amplitude": 2.4,
+          "max_hits": 2
         },
         {
           "type": "pendulum",
@@ -391,7 +416,8 @@
           "z": -50.0,
           "radius": 0.7,
           "speed": 1.5,
-          "amplitude": 2.2
+          "amplitude": 2.2,
+          "max_hits": 2
         },
         {
           "type": "static",
@@ -400,7 +426,8 @@
           "z": -48.0,
           "radius": 0.72,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "barrel_bonus",
@@ -409,7 +436,8 @@
           "z": -45.0,
           "radius": 0.52,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 1
         }
       ]
     },
@@ -434,7 +462,8 @@
           "z": -34.0,
           "radius": 0.7,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "static",
@@ -443,7 +472,8 @@
           "z": -36.0,
           "radius": 0.68,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "static",
@@ -452,7 +482,8 @@
           "z": -35.0,
           "radius": 0.7,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         }
       ]
     },
@@ -477,7 +508,8 @@
           "z": -39.0,
           "radius": 0.72,
           "speed": 0.25,
-          "amplitude": 1.6
+          "amplitude": 1.6,
+          "max_hits": 2
         },
         {
           "type": "popup",
@@ -486,7 +518,8 @@
           "z": -41.0,
           "radius": 0.72,
           "speed": 0.3,
-          "amplitude": 1.6
+          "amplitude": 1.6,
+          "max_hits": 2
         },
         {
           "type": "popup",
@@ -495,7 +528,8 @@
           "z": -40.0,
           "radius": 0.72,
           "speed": 0.22,
-          "amplitude": 1.6
+          "amplitude": 1.6,
+          "max_hits": 2
         }
       ]
     },
@@ -520,7 +554,8 @@
           "z": -45.0,
           "radius": 0.7,
           "speed": 1.5,
-          "amplitude": 2.8
+          "amplitude": 2.8,
+          "max_hits": 2
         },
         {
           "type": "shield_penalty",
@@ -529,7 +564,8 @@
           "z": -41.0,
           "radius": 0.6,
           "speed": 1.3,
-          "amplitude": 2.2
+          "amplitude": 2.2,
+          "max_hits": 0
         },
         {
           "type": "rail",
@@ -538,7 +574,8 @@
           "z": -44.0,
           "radius": 0.7,
           "speed": 1.3,
-          "amplitude": 2.0
+          "amplitude": 2.0,
+          "max_hits": 2
         }
       ]
     },
@@ -563,7 +600,8 @@
           "z": -49.0,
           "radius": 0.68,
           "speed": 1.55,
-          "amplitude": 2.6
+          "amplitude": 2.6,
+          "max_hits": 2
         },
         {
           "type": "pendulum",
@@ -572,7 +610,8 @@
           "z": -51.0,
           "radius": 0.68,
           "speed": 1.65,
-          "amplitude": 2.6
+          "amplitude": 2.6,
+          "max_hits": 2
         },
         {
           "type": "popup",
@@ -581,7 +620,8 @@
           "z": -47.0,
           "radius": 0.65,
           "speed": 0.35,
-          "amplitude": 1.5
+          "amplitude": 1.5,
+          "max_hits": 2
         }
       ]
     },
@@ -606,7 +646,8 @@
           "z": -52.0,
           "radius": 0.68,
           "speed": 0.38,
-          "amplitude": 1.6
+          "amplitude": 1.6,
+          "max_hits": 2
         },
         {
           "type": "popup",
@@ -615,7 +656,8 @@
           "z": -53.0,
           "radius": 0.68,
           "speed": 0.42,
-          "amplitude": 1.6
+          "amplitude": 1.6,
+          "max_hits": 2
         },
         {
           "type": "static",
@@ -624,7 +666,8 @@
           "z": -56.0,
           "radius": 0.65,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "barrel_bonus",
@@ -633,7 +676,8 @@
           "z": -50.0,
           "radius": 0.5,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 1
         }
       ]
     },
@@ -658,7 +702,8 @@
           "z": -45.0,
           "radius": 0.7,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "static",
@@ -667,7 +712,8 @@
           "z": -46.0,
           "radius": 0.68,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         },
         {
           "type": "static",
@@ -676,7 +722,8 @@
           "z": -45.0,
           "radius": 0.7,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 2
         }
       ]
     },
@@ -701,7 +748,8 @@
           "z": -50.0,
           "radius": 0.68,
           "speed": 1.6,
-          "amplitude": 2.8
+          "amplitude": 2.8,
+          "max_hits": 2
         },
         {
           "type": "rail",
@@ -710,7 +758,8 @@
           "z": -51.0,
           "radius": 0.68,
           "speed": -1.7,
-          "amplitude": 2.8
+          "amplitude": 2.8,
+          "max_hits": 2
         },
         {
           "type": "shield_penalty",
@@ -719,7 +768,8 @@
           "z": -46.0,
           "radius": 0.62,
           "speed": 1.8,
-          "amplitude": 3.2
+          "amplitude": 3.2,
+          "max_hits": 0
         }
       ]
     },
@@ -744,7 +794,8 @@
           "z": -55.0,
           "radius": 0.64,
           "speed": 1.75,
-          "amplitude": 2.6
+          "amplitude": 2.6,
+          "max_hits": 2
         },
         {
           "type": "pendulum",
@@ -753,7 +804,8 @@
           "z": -55.0,
           "radius": 0.64,
           "speed": -1.75,
-          "amplitude": 2.6
+          "amplitude": 2.6,
+          "max_hits": 2
         },
         {
           "type": "shield_penalty",
@@ -762,7 +814,8 @@
           "z": -51.0,
           "radius": 0.62,
           "speed": 2.0,
-          "amplitude": 3.4
+          "amplitude": 3.4,
+          "max_hits": 0
         },
         {
           "type": "barrel_bonus",
@@ -771,7 +824,8 @@
           "z": -53.0,
           "radius": 0.5,
           "speed": 0.0,
-          "amplitude": 0.0
+          "amplitude": 0.0,
+          "max_hits": 1
         }
       ]
     },
@@ -796,7 +850,8 @@
           "z": -58.0,
           "radius": 0.66,
           "speed": 1.85,
-          "amplitude": 4.0
+          "amplitude": 4.0,
+          "max_hits": 2
         },
         {
           "type": "rail",
@@ -805,7 +860,8 @@
           "z": -61.0,
           "radius": 0.64,
           "speed": -1.95,
-          "amplitude": 4.0
+          "amplitude": 4.0,
+          "max_hits": 2
         },
         {
           "type": "pendulum",
@@ -814,7 +870,8 @@
           "z": -59.0,
           "radius": 0.64,
           "speed": 1.8,
-          "amplitude": 2.2
+          "amplitude": 2.2,
+          "max_hits": 2
         },
         {
           "type": "popup",
@@ -823,7 +880,8 @@
           "z": -57.0,
           "radius": 0.64,
           "speed": 0.45,
-          "amplitude": 1.6
+          "amplitude": 1.6,
+          "max_hits": 2
         }
       ]
     },
@@ -848,7 +906,8 @@
           "z": -64.0,
           "radius": 0.66,
           "speed": 1.9,
-          "amplitude": 3.2
+          "amplitude": 3.2,
+          "max_hits": 2
         },
         {
           "type": "rail",
@@ -857,7 +916,8 @@
           "z": -68.0,
           "radius": 0.64,
           "speed": -2.0,
-          "amplitude": 3.2
+          "amplitude": 3.2,
+          "max_hits": 2
         },
         {
           "type": "pendulum",
@@ -866,7 +926,8 @@
           "z": -70.0,
           "radius": 0.62,
           "speed": 1.9,
-          "amplitude": 3.0
+          "amplitude": 3.0,
+          "max_hits": 2
         },
         {
           "type": "popup",
@@ -875,7 +936,8 @@
           "z": -62.0,
           "radius": 0.62,
           "speed": 0.48,
-          "amplitude": 1.6
+          "amplitude": 1.6,
+          "max_hits": 2
         },
         {
           "type": "popup",
@@ -884,7 +946,8 @@
           "z": -62.0,
           "radius": 0.62,
           "speed": 0.44,
-          "amplitude": 1.6
+          "amplitude": 1.6,
+          "max_hits": 2
         },
         {
           "type": "shield_penalty",
@@ -893,7 +956,8 @@
           "z": -60.0,
           "radius": 0.62,
           "speed": 2.1,
-          "amplitude": 3.8
+          "amplitude": 3.8,
+          "max_hits": 0
         }
       ]
     }
