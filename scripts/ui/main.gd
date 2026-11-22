@@ -227,7 +227,8 @@ func _build_settings() -> void:
 		lang_opt.add_item(LocalizationManager.get_language_display_name(code), i)
 		if code == LocalizationManager.current_language:
 			sel_idx = i
-	lang_opt.select(sel_idx)
+	if lang_opt.item_count > 0:
+		lang_opt.select(sel_idx)
 	lang_opt.item_selected.connect(func(idx): LocalizationManager.set_language(LocalizationManager.available_languages[idx]))
 	lang_row.add_child(lang_opt)
 	vbox.add_child(lang_row)

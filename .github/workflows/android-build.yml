@@ -26,28 +26,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Prepare Godot templates, Android SDK config & debug keystore
+      - name: Prepare Godot Android config & debug keystore
         run: |
-          mkdir -p ~/.local/share/godot/export_templates ~/.config/godot builds
-          if [ -d /root/.local/share/godot/export_templates ]; then
-            cp -rn /root/.local/share/godot/export_templates/* ~/.local/share/godot/export_templates/ || true
+          export HOME=/root
+          mkdir -p builds
+          if [ ! -f /root/debug.keystore ]; then
+            keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android               -keystore /root/debug.keystore -storepass android               -dname "CN=Android Debug,O=Android,C=US" -validity 9999 -deststoretype pkcs12
           fi
-          if [ -d /root/.config/godot ]; then
-            cp -rn /root/.config/godot/* ~/.config/godot/ || true
-          fi
-          if [ ! -f /tmp/debug.keystore ]; then
-            keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android               -keystore /tmp/debug.keystore -storepass android               -dname "CN=Android Debug,O=Android,C=US" -validity 9999 -deststoretype pkcs12
-          fi
-          sed -i 's|keystore/debug=""|keystore/debug="/tmp/debug.keystore"|g' export_presets.cfg
+          sed -i 's|keystore/debug=""|keystore/debug="/root/debug.keystore"|g' export_presets.cfg
 
       - name: Pre-heat project (.godot import cache)
-        run: godot --headless --import --quit || true
+        run: HOME=/root godot --headless --import --quit || true
 
       - name: Export Android Free Debug APK
-        run: godot --headless --verbose --export-debug "Android Free Debug" builds/medieval_archery_free_debug.apk
+        run: HOME=/root godot --headless --verbose --export-debug "Android Free Debug" builds/medieval_archery_free_debug.apk
 
       - name: Export Android Paid Debug APK
-        run: godot --headless --verbose --export-debug "Android Paid Debug" builds/medieval_archery_paid_debug.apk
+        run: HOME=/root godot --headless --verbose --export-debug "Android Paid Debug" builds/medieval_archery_paid_debug.apk
 
       - name: Upload Debug APKs
         uses: actions/upload-artifact@v4
@@ -67,18 +62,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Prepare Godot export templates
-        run: |
-          mkdir -p ~/.local/share/godot/export_templates ~/.config/godot builds/web
-          if [ -d /root/.local/share/godot/export_templates ]; then
-            cp -rn /root/.local/share/godot/export_templates/* ~/.local/share/godot/export_templates/ || true
-          fi
-
       - name: Pre-heat project (.godot import cache)
-        run: godot --headless --import --quit || true
+        run: |
+          mkdir -p builds/web
+          HOME=/root godot --headless --import --quit || true
 
       - name: Export Web (single-threaded for GitHub Pages)
-        run: godot --headless --verbose --export-release "Web" builds/web/index.html
+        run: HOME=/root godot --headless --verbose --export-release "Web" builds/web/index.html
 
       - name: Upload Web build artifact for Pages
         uses: actions/upload-pages-artifact@v3
@@ -113,7 +103,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Prepare Godot templates & decode Release Keystore
+      - name: Decode Release Keystore from Secrets
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
           KEYSTORE_USER: ${{ secrets.ANDROID_RELEASE_KEYSTORE_USER }}
@@ -123,22 +113,20 @@ jobs:
             echo "::error::Missing Android signing secrets (ANDROID_RELEASE_KEYSTORE_BASE64, ANDROID_RELEASE_KEYSTORE_USER, ANDROID_RELEASE_KEYSTORE_PASSWORD)."
             exit 1
           fi
-          mkdir -p ~/.local/share/godot/export_templates ~/.config/godot builds
-          cp -rn /root/.local/share/godot/export_templates/* ~/.local/share/godot/export_templates/ || true
-          cp -rn /root/.config/godot/* ~/.config/godot/ || true
+          mkdir -p builds
           echo "$KEYSTORE_B64" | base64 --decode > /tmp/release.keystore
           sed -i "s|keystore/release=""|keystore/release="/tmp/release.keystore"|g" export_presets.cfg
           sed -i "s|keystore/release_user=""|keystore/release_user="${KEYSTORE_USER}"|g" export_presets.cfg
           sed -i "s|keystore/release_password=""|keystore/release_password="${KEYSTORE_PASS}"|g" export_presets.cfg
 
       - name: Pre-heat project (.godot import cache)
-        run: godot --headless --import --quit || true
+        run: HOME=/root godot --headless --import --quit || true
 
       - name: Export Android Free Release AAB
-        run: godot --headless --verbose --export-release "Android Free Release" builds/medieval_archery_free_release.aab
+        run: HOME=/root godot --headless --verbose --export-release "Android Free Release" builds/medieval_archery_free_release.aab
 
       - name: Export Android Paid Release AAB
-        run: godot --headless --verbose --export-release "Android Paid Release" builds/medieval_archery_paid_release.aab
+        run: HOME=/root godot --headless --verbose --export-release "Android Paid Release" builds/medieval_archery_paid_release.aab
 
       - name: Clean up temporary keystore
         if: always()

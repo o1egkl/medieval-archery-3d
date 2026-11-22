@@ -1,0 +1,236 @@
+{
+  "languages": [
+    "en",
+    "ru"
+  ],
+  "strings": {
+    "app_title": {
+      "en": "Medieval Archery Range 3D",
+      "ru": "Средневековый тир из лука 3D"
+    },
+    "edition_free": {
+      "en": "FREE EDITION",
+      "ru": "БЕСПЛАТНАЯ ВЕРСИЯ"
+    },
+    "edition_paid": {
+      "en": "PRO EDITION (UNLIMITED)",
+      "ru": "ПОЛНАЯ ВЕРСИЯ (БЕЗ ЛИМИТОВ)"
+    },
+    "btn_play": {
+      "en": "Play",
+      "ru": "Играть"
+    },
+    "btn_levels": {
+      "en": "20 Levels",
+      "ru": "20 уровней"
+    },
+    "btn_help": {
+      "en": "Help & Rules",
+      "ru": "Справка и правила"
+    },
+    "btn_settings": {
+      "en": "Settings",
+      "ru": "Настройки"
+    },
+    "btn_back": {
+      "en": "Back",
+      "ru": "Назад"
+    },
+    "btn_resume": {
+      "en": "Resume",
+      "ru": "Продолжить"
+    },
+    "btn_retry": {
+      "en": "Retry",
+      "ru": "Повторить"
+    },
+    "btn_next_level": {
+      "en": "Next Level",
+      "ru": "Следующий уровень"
+    },
+    "btn_main_menu": {
+      "en": "Main Menu",
+      "ru": "Главное меню"
+    },
+    "btn_cancel_shot": {
+      "en": "Cancel Shot",
+      "ru": "Сбросить натяжение"
+    },
+    "hud_level_score": {
+      "en": "LVL {level} | {score} / {target}",
+      "ru": "УР. {level} | {score} / {target}"
+    },
+    "hud_wind": {
+      "en": "Wind: {speed} m/s",
+      "ru": "Ветер: {speed} м/с"
+    },
+    "hud_arrows": {
+      "en": "Arrows: {left} / {total}",
+      "ru": "Стрелы: {left} / {total}"
+    },
+    "hud_timer": {
+      "en": "Time: {sec}s",
+      "ru": "Время: {sec} с"
+    },
+    "hud_combo": {
+      "en": "Combo x{mult}",
+      "ru": "Серия x{mult}"
+    },
+    "attempts_badge": {
+      "en": "Daily Attempts: {left} / {base}",
+      "ru": "Попытки на сегодня: {left} / {base}"
+    },
+    "attempts_unlimited": {
+      "en": "Unlimited Attempts (Pro)",
+      "ru": "Безлимитные попытки (Pro)"
+    },
+    "attempts_exhausted_title": {
+      "en": "No Attempts Left Today",
+      "ru": "Попытки на сегодня закончились"
+    },
+    "attempts_exhausted_body": {
+      "en": "Your 10 daily attempts refresh at 06:00 local time. Upgrade to the Pro edition for unlimited play.",
+      "ru": "Ваши 10 ежедневных попыток обновятся в 06:00 по местному времени. Полная версия снимает ограничения навсегда."
+    },
+    "biome_village": {
+      "en": "Village Courtyard",
+      "ru": "Учебный двор деревни"
+    },
+    "biome_tournament": {
+      "en": "Royal Tournament",
+      "ru": "Королевский турнир"
+    },
+    "biome_forest": {
+      "en": "Dusk Forest",
+      "ru": "Лесной рубеж"
+    },
+    "biome_fortress": {
+      "en": "Night Fortress",
+      "ru": "Ночная крепость"
+    },
+    "result_win": {
+      "en": "LEVEL COMPLETE!",
+      "ru": "УРОВЕНЬ ПРОЙДЕН!"
+    },
+    "result_fail": {
+      "en": "LEVEL FAILED",
+      "ru": "УРОВЕНЬ НЕ ПРОЙДЕН"
+    },
+    "result_score": {
+      "en": "Score: {score} (Target: {target})",
+      "ru": "Очки: {score} (Нужно: {target})"
+    },
+    "result_stars": {
+      "en": "Stars earned: {stars} / 3",
+      "ru": "Звёзды: {stars} / 3"
+    },
+    "bonus_perfect": {
+      "en": "+1 Bonus Attempt: Perfect Shot!",
+      "ru": "+1 бонусная попытка: Идеальный выстрел!"
+    },
+    "bonus_economy": {
+      "en": "+1 Bonus Attempt: Sniper Economy!",
+      "ru": "+1 бонусная попытка: Снайперская экономия!"
+    },
+    "bonus_boss": {
+      "en": "+2 Bonus Attempts: Biome Conquered!",
+      "ru": "+2 бонусные попытки: Биом покорён!"
+    },
+    "hit_bullseye": {
+      "en": "BULLSEYE! +{pts}",
+      "ru": "ЯБЛОЧКО! +{pts}"
+    },
+    "hit_ring": {
+      "en": "HIT +{pts}",
+      "ru": "ПОПАДАНИЕ +{pts}"
+    },
+    "hit_barrel": {
+      "en": "BONUS BARREL! +{pts}",
+      "ru": "БОНУСНАЯ БОЧКА! +{pts}"
+    },
+    "hit_penalty": {
+      "en": "SHIELD PENALTY! {pts}",
+      "ru": "ШТРАФ ЗА ЩИТ! {pts}"
+    },
+    "settings_title": {
+      "en": "Settings",
+      "ru": "Настройки"
+    },
+    "settings_language": {
+      "en": "Interface Language",
+      "ru": "Язык интерфейса"
+    },
+    "settings_sound": {
+      "en": "Sound Effects (SFX)",
+      "ru": "Звуковые эффекты"
+    },
+    "settings_music": {
+      "en": "Ambient Audio",
+      "ru": "Фоновый звук"
+    },
+    "settings_haptics": {
+      "en": "Vibration (Haptics)",
+      "ru": "Вибрация (Haptics)"
+    },
+    "settings_gyro": {
+      "en": "Gyroscope Micro-Aim",
+      "ru": "Микро-доводка гироскопом"
+    },
+    "settings_sensitivity": {
+      "en": "Aim Sensitivity",
+      "ru": "Чувствительность прицела"
+    },
+    "settings_quality": {
+      "en": "Graphics Quality",
+      "ru": "Качество графики"
+    },
+    "quality_low": {
+      "en": "Low",
+      "ru": "Низкое"
+    },
+    "quality_medium": {
+      "en": "Medium",
+      "ru": "Среднее"
+    },
+    "quality_high": {
+      "en": "High",
+      "ru": "Высокое"
+    },
+    "help_title": {
+      "en": "How to Play",
+      "ru": "Как играть"
+    },
+    "help_controls_title": {
+      "en": "1. Controls & Shooting",
+      "ru": "1. Управление и стрельба"
+    },
+    "help_controls_body": {
+      "en": "Press and hold anywhere on the screen to draw the bowstring. Drag your finger to aim, then release to fire. Tap 'Cancel Shot' to relax the bow without spending an arrow. Holding full draw longer than 3.5 seconds causes hand sway.",
+      "ru": "Удерживайте палец на экране, чтобы натянуть тетиву. Двигайте пальцем для прицеливания и отпустите для выстрела. Кнопка «Сбросить натяжение» отменяет выстрел без траты стрелы. Переудержание тетивы дольше 3,5 секунд вызывает покачивание рук."
+    },
+    "help_ballistics_title": {
+      "en": "2. Gravity & Wind",
+      "ru": "2. Гравитация и ветер"
+    },
+    "help_ballistics_body": {
+      "en": "Arrows follow a realistic arc. Aim slightly above distant targets and compensate for crosswind shown on the top wind indicator and fluttering banners.",
+      "ru": "Стрелы летят по параболе. На дальних дистанциях берите упреждение выше цели и учитывайте боковой ветер по верхнему индикатору и колыханию флагов."
+    },
+    "help_scoring_title": {
+      "en": "3. Scoring & Stars",
+      "ru": "3. Очки и звёзды"
+    },
+    "help_scoring_body": {
+      "en": "Bullseye = 100 pts, Inner = 60, Middle = 30, Outer = 10. Consecutive hits build a Combo multiplier (up to x3). Avoid red penalty shields (-50 pts). Unused arrows award bonus points.",
+      "ru": "Яблочко = 100 оч., внутреннее кольцо = 60, среднее = 30, внешнее = 10. Серия попаданий даёт множитель до x3. Избегайте штрафных щитов (-50 оч.). Оставшиеся стрелы добавляют бонусные очки."
+    },
+    "help_attempts_title": {
+      "en": "4. Daily Attempts (Free Edition)",
+      "ru": "4. Дневные попытки (Бесплатная версия)"
+    },
+    "help_attempts_body": {
+      "en": "You start with 10 attempts every morning at 06:00. Winning a level NEVER spends an attempt — only failing does. Earn up to +3 daily bonus attempts for 3-star wins, 3 bullseyes in a row, or finishing with 2+ arrows left, plus +2 one-time attempts for beating each biome boss (levels 5, 10, 15, 20). The Paid edition removes all limits.",
+      "ru": "Каждое утро в 06:00 обновляются 10 попыток. Победа НЕ тратит попытку — списываются только проигрыши. Можно получить до +3 бонусных попыток в день (за 3 звезды, 3 яблочка подряд или победу с запасом 2+ стрел), а также разово +2 попытки за босса каждого биома (уровни 5, 10, 15, 20). В платной версии лимита нет."
+    }
+  }
+}

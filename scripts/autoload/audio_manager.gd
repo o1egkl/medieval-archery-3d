@@ -30,7 +30,7 @@ func _make_tone(freq_start: float, freq_end: float, duration: float, volume: flo
 	data.resize(count * 2)
 	var phase := 0.0
 	for i in range(count):
-		var t := float(i) / float(max(count, 1))
+		var t := float(i) / float(maxi(count, 1))
 		var freq := lerpf(freq_start, freq_end, t)
 		phase += TAU * freq / float(sample_rate)
 		var env := sin(t * PI)
@@ -48,7 +48,7 @@ func _make_noise_burst(duration: float, volume: float) -> AudioStreamWAV:
 	var data := PackedByteArray()
 	data.resize(count * 2)
 	for i in range(count):
-		var t := float(i) / float(max(count, 1))
+		var t := float(i) / float(maxi(count, 1))
 		var env := (1.0 - t) * (1.0 - t)
 		var sample := int(clampf(randf_range(-1.0, 1.0) * env * volume, -1.0, 1.0) * 32767.0)
 		data.encode_s16(i * 2, sample)

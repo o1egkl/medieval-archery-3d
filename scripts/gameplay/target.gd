@@ -117,7 +117,7 @@ func evaluate_hit(world_hit_pos: Vector3) -> Dictionary:
 
 	var local_pos := _pivot.to_local(world_hit_pos)
 	var dist := Vector2(local_pos.x, local_pos.y).length()
-	var norm := dist / max(radius, 0.01)
+	var norm: float = dist / maxf(radius, 0.01)
 
 	if norm <= 0.24:
 		return {"hit": true, "points": 100, "kind": "bullseye", "bullseye": true}
