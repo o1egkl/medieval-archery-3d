@@ -51,7 +51,7 @@ static func get_stone_texture() -> ImageTexture:
 			var ox := (x + (row % 2) * 16) % 32
 			var oy := y % 16
 			var mortar := (ox < 2 or oy < 2)
-			var base_v := 0.42 if mortar else (0.58 + float((row * 7 + int((x + row * 16) / 32) * 13) % 7) * 0.02)
+			var base_v := 0.30 if mortar else (0.44 + float((row * 7 + int((x + row * 16) / 32) * 13) % 7) * 0.018)
 			img.set_pixel(x, y, Color(base_v, base_v * 0.99, base_v * 0.96, 1.0))
 	var tex := ImageTexture.create_from_image(img)
 	_cache["stone"] = tex

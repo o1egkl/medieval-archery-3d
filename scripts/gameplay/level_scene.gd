@@ -13,7 +13,7 @@ var camera: Camera3D
 var _env_root: Node3D
 var _targets_root: Node3D
 var _arrows_root: Node3D
-var _flags: Array[MeshInstance3D] = []
+var _flags: Array[Node3D] = []
 var _windmill_blades: Node3D
 
 var level_cfg: Dictionary = {}
@@ -121,14 +121,14 @@ func _build_biome(biome: String) -> void:
 			sky_mat.ground_bottom_color = Color(0.22, 0.36, 0.16)
 			sky_mat.ground_horizon_color = Color(0.55, 0.68, 0.50)
 			light.light_color = Color(1.0, 0.96, 0.86)
-			light.light_energy = 1.35
+			light.light_energy = 1.05
 		"tournament":
 			sky_mat.sky_top_color = Color(0.18, 0.52, 0.94)
 			sky_mat.sky_horizon_color = Color(0.78, 0.90, 1.0)
 			sky_mat.ground_bottom_color = Color(0.20, 0.38, 0.14)
 			sky_mat.ground_horizon_color = Color(0.52, 0.70, 0.48)
 			light.light_color = Color(1.0, 0.95, 0.82)
-			light.light_energy = 1.45
+			light.light_energy = 1.10
 		"forest":
 			sky_mat.sky_top_color = Color(0.26, 0.24, 0.42)
 			sky_mat.sky_horizon_color = Color(0.88, 0.50, 0.30)
@@ -155,7 +155,8 @@ func _build_biome(biome: String) -> void:
 	sky.sky_material = sky_mat
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.65 if biome != "fortress" else 0.45
+	env.ambient_light_energy = 0.50 if biome != "fortress" else 0.35
+	env.tonemap_mode = Environment.TONE_MAPPER_ACES
 	world_env.environment = env
 	_env_root.add_child(world_env)
 	_env_root.add_child(light)
@@ -189,7 +190,7 @@ func _build_biome(biome: String) -> void:
 	dirt.mesh = dpm
 	dirt.position = Vector3(0.0, 0.015, -42.0)
 	var dmat := StandardMaterial3D.new()
-	dmat.albedo_color = Color(0.68, 0.58, 0.38) * ground_tint
+	dmat.albedo_color = Color(0.50, 0.41, 0.25) * ground_tint
 	dmat.roughness = 0.96
 	dirt.material_override = dmat
 	_env_root.add_child(dirt)
@@ -295,16 +296,19 @@ func _build_wind_flags() -> void:
 			pole.material_override = wood_mat
 			_env_root.add_child(pole)
 
+			var flag_pivot := Node3D.new()
+			flag_pivot.position = Vector3(side * 9.0, 4.95, -dist)
+			_env_root.add_child(flag_pivot)
 			var flag := MeshInstance3D.new()
 			var fbox := BoxMesh.new()
-			fbox.size = Vector3(2.2, 0.68, 0.05)
+			fbox.size = Vector3(2.1, 0.65, 0.05)
 			flag.mesh = fbox
-			flag.position = Vector3(side * 9.0, 4.95, -dist)
+			flag.position = Vector3(1.05, 0.0, 0.0)
 			var fmat := StandardMaterial3D.new()
 			fmat.albedo_color = colors[idx % colors.size()]
 			flag.material_override = fmat
-			_env_root.add_child(flag)
-			_flags.append(flag)
+			flag_pivot.add_child(flag)
+			_flags.append(flag_pivot)
 			idx += 1
 
 func _build_pavilion(pos: Vector3, col_a: Color, col_b: Color, tex_key: String) -> void:

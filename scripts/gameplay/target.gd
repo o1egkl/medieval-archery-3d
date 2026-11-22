@@ -108,21 +108,29 @@ func _build_mesh() -> void:
 	drum.material_override = straw_mat
 	_pivot.add_child(drum)
 
-	# Crisp painted bullseye face disk on front
-	var face := MeshInstance3D.new()
-	var fm := CylinderMesh.new()
-	fm.top_radius = radius * 0.99
-	fm.bottom_radius = radius * 0.99
-	fm.height = 0.02
-	fm.radial_segments = 32
-	face.mesh = fm
-	face.rotation_degrees.x = 90.0
-	face.position.z = 0.135
-	var face_mat := StandardMaterial3D.new()
-	face_mat.albedo_texture = ProcTex.get_target_face_texture()
-	face_mat.roughness = 0.78
-	face.material_override = face_mat
-	_pivot.add_child(face)
+	# Mathematically centered concentric rings (avoids CylinderMesh quadrant UV offset)
+	var ring_specs := [
+		{"scale": 0.86, "z": 0.132, "col": Color(0.95, 0.94, 0.90)},
+		{"scale": 0.68, "z": 0.138, "col": Color(0.16, 0.50, 0.84)},
+		{"scale": 0.48, "z": 0.144, "col": Color(0.86, 0.20, 0.16)},
+		{"scale": 0.26, "z": 0.150, "col": Color(0.98, 0.80, 0.10)},
+		{"scale": 0.07, "z": 0.155, "col": Color(0.82, 0.58, 0.04)}
+	]
+	for rs in ring_specs:
+		var ring := MeshInstance3D.new()
+		var rm := CylinderMesh.new()
+		rm.top_radius = radius * float(rs["scale"])
+		rm.bottom_radius = radius * float(rs["scale"])
+		rm.height = 0.012
+		rm.radial_segments = 32
+		ring.mesh = rm
+		ring.rotation_degrees.x = 90.0
+		ring.position.z = float(rs["z"])
+		var rmat := StandardMaterial3D.new()
+		rmat.albedo_color = rs["col"]
+		rmat.roughness = 0.78
+		ring.material_override = rmat
+		_pivot.add_child(ring)
 
 	# Wooden A-frame tripod stand (like the concept art)
 	if target_type != "pendulum":

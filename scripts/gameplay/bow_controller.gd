@@ -32,8 +32,8 @@ func _ready() -> void:
 
 func _build_first_person_bow() -> void:
 	_bow_node = Node3D.new()
-	_bow_node.position = Vector3(0.28, -0.24, -0.58)
-	_bow_node.rotation_degrees = Vector3(4.0, 6.0, -18.0)
+	_bow_node.position = Vector3(0.20, -0.12, -0.56)
+	_bow_node.rotation_degrees = Vector3(2.0, 10.0, -14.0)
 	add_child(_bow_node)
 
 	var wood_mat := StandardMaterial3D.new()
@@ -250,4 +250,4 @@ func _process(delta: float) -> void:
 	_update_bowstring(draw_ratio)
 	if _bow_node != null:
 		var idle_bob := sin(Time.get_ticks_msec() * 0.002) * 0.008
-		_bow_node.position = Vector3(0.28, -0.24 + idle_bob - _recoil * 0.03, -0.58 + _recoil * 0.04)
+		_bow_node.position = Vector3(0.20, -0.12 + idle_bob - _recoil * 0.03, -0.56 + _recoil * 0.04)
