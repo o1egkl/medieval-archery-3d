@@ -21,8 +21,8 @@
       "ru": "Играть"
     },
     "btn_levels": {
-      "en": "20 Levels",
-      "ru": "20 уровней"
+      "en": "Select Level",
+      "ru": "Выбрать уровень"
     },
     "btn_help": {
       "en": "Help & Rules",
@@ -229,8 +229,8 @@
       "ru": "4. Дневные попытки (Бесплатная версия)"
     },
     "help_attempts_body": {
-      "en": "You start with 10 attempts every morning at 06:00. Winning a level NEVER spends an attempt — only failing does. Earn up to +3 daily bonus attempts for 3-star wins, 3 bullseyes in a row, or finishing with 2+ arrows left, plus +2 one-time attempts for beating each biome boss (levels 5, 10, 15, 20). The Paid edition removes all limits.",
-      "ru": "Каждое утро в 06:00 обновляются 10 попыток. Победа НЕ тратит попытку — списываются только проигрыши. Можно получить до +3 бонусных попыток в день (за 3 звезды, 3 яблочка подряд или победу с запасом 2+ стрел), а также разово +2 попытки за босса каждого биома (уровни 5, 10, 15, 20). В платной версии лимита нет."
+      "en": "You start with 10 attempts every morning at 06:00. Winning a level NEVER spends an attempt — only failing does. Earn up to +3 daily bonus attempts for 3-star wins, 3 bullseyes in a row, or finishing with 2+ arrows left, plus +2 one-time attempts for beating each boss level (5, 10, 15, 20, 25, 30, 35, 40, 45, 50). The Paid edition removes all limits.",
+      "ru": "Каждое утро в 06:00 обновляются 10 попыток. Победа НЕ тратит попытку — списываются только проигрыши. Можно получить до +3 бонусных попыток в день (за 3 звезды, 3 яблочка подряд или победу с запасом 2+ стрел), а также разово +2 попытки за каждый босс-уровень (5, 10, 15, 20, 25, 30, 35, 40, 45, 50). В платной версии лимита нет."
     },
     "cancel_hint_desktop": {
       "en": "RMB / Space — Relax Bow",
