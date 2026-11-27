@@ -14,6 +14,11 @@
       "entry": "index.html",
       "external_origins": []
     },
+    "csp_overrides": {
+      "script-src": [
+        "'wasm-unsafe-eval'"
+      ]
+    },
     "browser_permissions": [
       "fullscreen",
       "autoplay"
