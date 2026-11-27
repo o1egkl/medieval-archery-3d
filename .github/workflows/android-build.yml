@@ -36,7 +36,10 @@ jobs:
           sed -i 's|keystore/debug=""|keystore/debug="/root/debug.keystore"|g' export_presets.cfg
 
       - name: Pre-heat project (.godot import cache)
-        run: HOME=/root godot --headless --import --quit || true
+        run: |
+          mkdir -p android/build
+          unzip -q -o /root/.local/share/godot/export_templates/4.3.stable/android_source.zip -d android/build
+          HOME=/root godot --headless --import --quit || true
 
       - name: Export Android Free Debug APK
         run: HOME=/root godot --headless --verbose --export-debug "Android Free Debug" builds/medieval_archery_free_debug.apk
@@ -173,7 +176,10 @@ jobs:
           sed -i "s|keystore/release_password=\"\"|keystore/release_password=\"${REL_PASS}\"|g" export_presets.cfg
 
       - name: Pre-heat project (.godot import cache)
-        run: HOME=/root godot --headless --import --quit || true
+        run: |
+          mkdir -p android/build
+          unzip -q -o /root/.local/share/godot/export_templates/4.3.stable/android_source.zip -d android/build
+          HOME=/root godot --headless --import --quit || true
 
       - name: Export Android Free Release AAB
         run: HOME=/root godot --headless --verbose --export-release "Android Free Release" builds/medieval_archery_free_release.aab
