@@ -39,6 +39,8 @@ jobs:
         run: |
           mkdir -p android/build
           unzip -q -o /root/.local/share/godot/export_templates/4.3.stable/android_source.zip -d android/build
+          touch android/build/.gdignore
+          echo "4.3.stable" > android/.build_version
           HOME=/root godot --headless --import --quit || true
 
       - name: Export Android Free Debug APK
@@ -179,6 +181,8 @@ jobs:
         run: |
           mkdir -p android/build
           unzip -q -o /root/.local/share/godot/export_templates/4.3.stable/android_source.zip -d android/build
+          touch android/build/.gdignore
+          echo "4.3.stable" > android/.build_version
           HOME=/root godot --headless --import --quit || true
 
       - name: Export Android Free Release AAB
