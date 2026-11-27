@@ -292,8 +292,8 @@
       "wind_gusty": true,
       "arrows": 7,
       "target_score": 450,
-      "star2_score": 560,
-      "star3_score": 670,
+      "star2_score": 520,
+      "star3_score": 600,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -337,9 +337,9 @@
       "wind_max": 5.0,
       "wind_gusty": true,
       "arrows": 8,
-      "target_score": 500,
-      "star2_score": 630,
-      "star3_score": 760,
+      "target_score": 490,
+      "star2_score": 610,
+      "star3_score": 725,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -497,7 +497,7 @@
       "arrows": 8,
       "target_score": 520,
       "star2_score": 640,
-      "star3_score": 760,
+      "star3_score": 750,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -508,7 +508,7 @@
           "z": -39.0,
           "radius": 0.72,
           "speed": 0.25,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -518,7 +518,7 @@
           "z": -41.0,
           "radius": 0.72,
           "speed": 0.3,
-          "amplitude": 1.6,
+          "amplitude": 0.95,
           "max_hits": 2
         },
         {
@@ -528,7 +528,7 @@
           "z": -40.0,
           "radius": 0.72,
           "speed": 0.22,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         }
       ]
@@ -541,9 +541,9 @@
       "wind_max": 6.0,
       "wind_gusty": true,
       "arrows": 8,
-      "target_score": 560,
-      "star2_score": 680,
-      "star3_score": 800,
+      "target_score": 490,
+      "star2_score": 570,
+      "star3_score": 650,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -587,9 +587,9 @@
       "wind_max": 6.5,
       "wind_gusty": true,
       "arrows": 8,
-      "target_score": 600,
-      "star2_score": 730,
-      "star3_score": 860,
+      "target_score": 560,
+      "star2_score": 660,
+      "star3_score": 750,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -620,7 +620,7 @@
           "z": -47.0,
           "radius": 0.65,
           "speed": 0.35,
-          "amplitude": 1.5,
+          "amplitude": 0.75,
           "max_hits": 2
         }
       ]
@@ -633,8 +633,8 @@
       "wind_max": 7.0,
       "wind_gusty": true,
       "arrows": 9,
-      "target_score": 650,
-      "star2_score": 790,
+      "target_score": 600,
+      "star2_score": 760,
       "star3_score": 930,
       "time_limit_sec": 65,
       "is_biome_boss": true,
@@ -646,7 +646,7 @@
           "z": -52.0,
           "radius": 0.68,
           "speed": 0.38,
-          "amplitude": 1.6,
+          "amplitude": 0.95,
           "max_hits": 2
         },
         {
@@ -656,7 +656,7 @@
           "z": -53.0,
           "radius": 0.68,
           "speed": 0.42,
-          "amplitude": 1.6,
+          "amplitude": 0.95,
           "max_hits": 2
         },
         {
@@ -689,9 +689,9 @@
       "wind_max": 6.5,
       "wind_gusty": false,
       "arrows": 8,
-      "target_score": 620,
-      "star2_score": 750,
-      "star3_score": 880,
+      "target_score": 560,
+      "star2_score": 660,
+      "star3_score": 750,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -735,9 +735,9 @@
       "wind_max": 7.5,
       "wind_gusty": true,
       "arrows": 8,
-      "target_score": 660,
-      "star2_score": 800,
-      "star3_score": 940,
+      "target_score": 490,
+      "star2_score": 570,
+      "star3_score": 650,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -781,9 +781,9 @@
       "wind_max": 8.0,
       "wind_gusty": true,
       "arrows": 9,
-      "target_score": 720,
-      "star2_score": 860,
-      "star3_score": 1000,
+      "target_score": 520,
+      "star2_score": 650,
+      "star3_score": 775,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -839,7 +839,7 @@
       "arrows": 9,
       "target_score": 780,
       "star2_score": 920,
-      "star3_score": 1060,
+      "star3_score": 1050,
       "time_limit_sec": 60,
       "is_biome_boss": false,
       "targets": [
@@ -880,7 +880,7 @@
           "z": -57.0,
           "radius": 0.64,
           "speed": 0.45,
-          "amplitude": 1.6,
+          "amplitude": 1.35,
           "max_hits": 2
         }
       ]
@@ -936,7 +936,7 @@
           "z": -62.0,
           "radius": 0.62,
           "speed": 0.48,
-          "amplitude": 1.6,
+          "amplitude": 1.15,
           "max_hits": 2
         },
         {
@@ -946,7 +946,7 @@
           "z": -62.0,
           "radius": 0.62,
           "speed": 0.44,
-          "amplitude": 1.6,
+          "amplitude": 1.15,
           "max_hits": 2
         },
         {
@@ -992,7 +992,7 @@
           "z": -39.5,
           "radius": 0.72,
           "speed": 0.28,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {
@@ -1026,8 +1026,8 @@
       "wind_gusty": false,
       "arrows": 7,
       "target_score": 500,
-      "star2_score": 660,
-      "star3_score": 820,
+      "star2_score": 600,
+      "star3_score": 700,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -1038,7 +1038,7 @@
           "z": -37.5,
           "radius": 0.72,
           "speed": 0.29,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -1137,9 +1137,9 @@
       "wind_max": 5.1,
       "wind_gusty": true,
       "arrows": 7,
-      "target_score": 540,
-      "star2_score": 700,
-      "star3_score": 860,
+      "target_score": 520,
+      "star2_score": 610,
+      "star3_score": 700,
       "time_limit_sec": 65,
       "is_biome_boss": false,
       "targets": [
@@ -1216,7 +1216,7 @@
           "z": -44.5,
           "radius": 0.7,
           "speed": 0.31,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {
@@ -1269,9 +1269,9 @@
       "wind_max": 5.5,
       "wind_gusty": true,
       "arrows": 7,
-      "target_score": 580,
-      "star2_score": 740,
-      "star3_score": 900,
+      "target_score": 520,
+      "star2_score": 610,
+      "star3_score": 700,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -1282,7 +1282,7 @@
           "z": -42.5,
           "radius": 0.7,
           "speed": 0.32,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -1325,8 +1325,8 @@
       "wind_max": 5.7,
       "wind_gusty": true,
       "arrows": 7,
-      "target_score": 600,
-      "star2_score": 760,
+      "target_score": 520,
+      "star2_score": 630,
       "star3_score": 920,
       "time_limit_sec": 65,
       "is_biome_boss": false,
@@ -1381,9 +1381,9 @@
       "wind_max": 5.9,
       "wind_gusty": true,
       "arrows": 7,
-      "target_score": 620,
-      "star2_score": 780,
-      "star3_score": 940,
+      "target_score": 520,
+      "star2_score": 610,
+      "star3_score": 700,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -1460,7 +1460,7 @@
           "z": -49.5,
           "radius": 0.68,
           "speed": 0.34,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {
@@ -1516,7 +1516,7 @@
           "z": -48.5,
           "radius": 0.68,
           "speed": 0.35,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -1556,7 +1556,7 @@
           "z": -48.5,
           "radius": 0.68,
           "speed": 0.35,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {
@@ -1622,7 +1622,7 @@
           "z": -52.5,
           "radius": 0.67,
           "speed": 0.36,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -1734,7 +1734,7 @@
           "z": -55.5,
           "radius": 0.67,
           "speed": 0.38,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {
@@ -1779,7 +1779,7 @@
       "arrows": 9,
       "target_score": 740,
       "star2_score": 900,
-      "star3_score": 1060,
+      "star3_score": 1050,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -1790,7 +1790,7 @@
           "z": -53.5,
           "radius": 0.66,
           "speed": 0.38,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -1886,7 +1886,7 @@
           "z": -57.5,
           "radius": 0.66,
           "speed": 0.39,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -1930,8 +1930,8 @@
       "wind_gusty": true,
       "arrows": 9,
       "target_score": 780,
-      "star2_score": 940,
-      "star3_score": 1100,
+      "star2_score": 920,
+      "star3_score": 1050,
       "time_limit_sec": 65,
       "is_biome_boss": false,
       "targets": [
@@ -1995,7 +1995,7 @@
       "wind_max": 7.9,
       "wind_gusty": true,
       "arrows": 9,
-      "target_score": 800,
+      "target_score": 790,
       "star2_score": 960,
       "star3_score": 1120,
       "time_limit_sec": 0,
@@ -2018,7 +2018,7 @@
           "z": -60.5,
           "radius": 0.65,
           "speed": 0.41,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {
@@ -2061,9 +2061,9 @@
       "wind_max": 8.1,
       "wind_gusty": true,
       "arrows": 9,
-      "target_score": 820,
-      "star2_score": 980,
-      "star3_score": 1140,
+      "target_score": 790,
+      "star2_score": 920,
+      "star3_score": 1050,
       "time_limit_sec": 0,
       "is_biome_boss": false,
       "targets": [
@@ -2074,7 +2074,7 @@
           "z": -58.5,
           "radius": 0.64,
           "speed": 0.42,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -2127,8 +2127,8 @@
       "wind_max": 8.4,
       "wind_gusty": true,
       "arrows": 9,
-      "target_score": 840,
-      "star2_score": 1000,
+      "target_score": 790,
+      "star2_score": 980,
       "star3_score": 1160,
       "time_limit_sec": 65,
       "is_biome_boss": false,
@@ -2170,7 +2170,7 @@
           "z": -63.5,
           "radius": 0.64,
           "speed": 0.42,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -2292,7 +2292,7 @@
           "z": -66.5,
           "radius": 0.63,
           "speed": 0.44,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {
@@ -2358,7 +2358,7 @@
           "z": -64.5,
           "radius": 0.63,
           "speed": 0.45,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -2398,7 +2398,7 @@
           "z": -64.5,
           "radius": 0.63,
           "speed": 0.45,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {
@@ -2464,7 +2464,7 @@
           "z": -68.5,
           "radius": 0.62,
           "speed": 0.46,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -2596,7 +2596,7 @@
           "z": -71.5,
           "radius": 0.61,
           "speed": 0.47,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {
@@ -2682,7 +2682,7 @@
           "z": -69.5,
           "radius": 0.61,
           "speed": 0.48,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -2722,7 +2722,7 @@
           "z": -69.5,
           "radius": 0.61,
           "speed": 0.48,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {
@@ -2788,7 +2788,7 @@
           "z": -74.5,
           "radius": 0.6,
           "speed": 0.49,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -2920,7 +2920,7 @@
           "z": -76.5,
           "radius": 0.59,
           "speed": 0.5,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {
@@ -2986,7 +2986,7 @@
           "z": -75.5,
           "radius": 0.59,
           "speed": 0.51,
-          "amplitude": 1.6,
+          "amplitude": 0.85,
           "max_hits": 2
         },
         {
@@ -3026,7 +3026,7 @@
           "z": -75.5,
           "radius": 0.59,
           "speed": 0.51,
-          "amplitude": 1.6,
+          "amplitude": 1.5,
           "max_hits": 2
         },
         {

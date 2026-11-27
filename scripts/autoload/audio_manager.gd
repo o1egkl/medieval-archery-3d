@@ -12,6 +12,8 @@ func _ready() -> void:
 	_ambient_player = AudioStreamPlayer.new()
 	add_child(_ambient_player)
 	_build_procedural_sfx()
+	_ambient_player.stream = _make_wind_ambient(4.0, 0.055)
+	sync_ambient_state()
 
 func _build_procedural_sfx() -> void:
 	_sfx_cache["ui_click"] = _make_tone(620.0, 480.0, 0.06, 0.25)
@@ -58,6 +60,36 @@ func _make_noise_burst(duration: float, volume: float) -> AudioStreamWAV:
 	wav.mix_rate = sample_rate
 	wav.data = data
 	return wav
+
+func _make_wind_ambient(duration: float, volume: float) -> AudioStreamWAV:
+	var sample_rate := 22050
+	var count := int(sample_rate * duration)
+	var data := PackedByteArray()
+	data.resize(count * 2)
+	var lp := 0.0
+	for i in range(count):
+		var t := float(i) / float(maxi(count, 1))
+		var swell := 0.65 + 0.35 * sin(t * TAU)
+		lp = lerpf(lp, randf_range(-1.0, 1.0), 0.025)
+		var sample := int(clampf(lp * swell * volume, -1.0, 1.0) * 32767.0)
+		data.encode_s16(i * 2, sample)
+	var wav := AudioStreamWAV.new()
+	wav.format = AudioStreamWAV.FORMAT_16_BITS
+	wav.mix_rate = sample_rate
+	wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	wav.loop_begin = 0
+	wav.loop_end = count
+	wav.data = data
+	return wav
+
+func sync_ambient_state() -> void:
+	if _ambient_player == null or _ambient_player.stream == null:
+		return
+	var enabled := bool(SaveManager.get_setting("music_enabled", true))
+	if enabled and not _ambient_player.playing:
+		_ambient_player.play()
+	elif not enabled and _ambient_player.playing:
+		_ambient_player.stop()
 
 func play_sfx(sfx_name: String) -> void:
 	if not bool(SaveManager.get_setting("sound_enabled", true)):

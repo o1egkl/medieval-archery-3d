@@ -66,8 +66,8 @@ func _build_mesh() -> void:
 		halo.material_override = hmat
 		_pivot.add_child(halo)
 		if glb_barrel != null:
-			glb_barrel.scale = Vector3.ONE * (radius * 2.2)
-			glb_barrel.position.y = -radius * 0.9
+			glb_barrel.scale = Vector3.ONE * (radius * 5.8)
+			glb_barrel.position.y = -radius * 0.87
 			_pivot.add_child(glb_barrel)
 			return
 		var barrel := MeshInstance3D.new()
@@ -133,13 +133,17 @@ func _build_mesh() -> void:
 	drum.material_override = straw_mat
 	_pivot.add_child(drum)
 
-	# Mathematically centered concentric rings (avoids CylinderMesh quadrant UV offset)
+	# Mathematically centered concentric rings with dark separators for sharp distance readability
 	var ring_specs := [
-		{"scale": 0.86, "z": 0.132, "col": Color(0.95, 0.94, 0.90)},
-		{"scale": 0.68, "z": 0.138, "col": Color(0.16, 0.50, 0.84)},
-		{"scale": 0.48, "z": 0.144, "col": Color(0.86, 0.20, 0.16)},
-		{"scale": 0.26, "z": 0.150, "col": Color(0.98, 0.80, 0.10)},
-		{"scale": 0.07, "z": 0.155, "col": Color(0.82, 0.58, 0.04)}
+		{"scale": 0.875, "z": 0.131, "col": Color(0.18, 0.14, 0.10)},
+		{"scale": 0.855, "z": 0.135, "col": Color(0.96, 0.95, 0.92)},
+		{"scale": 0.695, "z": 0.139, "col": Color(0.16, 0.16, 0.18)},
+		{"scale": 0.675, "z": 0.143, "col": Color(0.16, 0.52, 0.88)},
+		{"scale": 0.495, "z": 0.147, "col": Color(0.16, 0.16, 0.18)},
+		{"scale": 0.475, "z": 0.151, "col": Color(0.88, 0.20, 0.16)},
+		{"scale": 0.275, "z": 0.155, "col": Color(0.18, 0.12, 0.06)},
+		{"scale": 0.258, "z": 0.159, "col": Color(0.99, 0.82, 0.12)},
+		{"scale": 0.065, "z": 0.163, "col": Color(0.84, 0.58, 0.04)}
 	]
 	for rs in ring_specs:
 		var ring := MeshInstance3D.new()
@@ -252,10 +256,9 @@ func _spawn_hit_burst(local_hit: Vector3, is_bullseye: bool) -> void:
 	burst.mesh = pm
 	_pivot.add_child(burst)
 	burst.emitting = true
-	get_tree().create_timer(0.6).timeout.connect(func():
-		if is_instance_valid(burst):
-			burst.queue_free()
-	)
+	var cleanup_tw := burst.create_tween()
+	cleanup_tw.tween_interval(0.6)
+	cleanup_tw.tween_callback(burst.queue_free)
 
 func evaluate_hit(world_hit_pos: Vector3) -> Dictionary:
 	if is_knocked_down:

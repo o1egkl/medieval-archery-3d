@@ -12,11 +12,13 @@ var levels_panel: Control
 var help_panel: Control
 var settings_panel: Control
 var hud_panel: Control
+var pause_panel: Control
 var result_panel: Control
 var attempts_modal: Control
 
 var _current_level_id: int = 1
 var _hud_score_lbl: Label
+var _hud_combo_lbl: Label
 var _hud_wind_lbl: Label
 var _hud_arrows_lbl: Label
 var _hud_timer_lbl: Label
@@ -24,6 +26,7 @@ var _hud_feedback_lbl: Label
 var _reticle_overlay: Control
 var _hit_diagram: Control
 var _hud_feedback_pill: PanelContainer
+var _hud_combo_pill: PanelContainer
 var _cancel_btn: Button
 
 func _ready() -> void:
@@ -41,8 +44,22 @@ func _ready() -> void:
 	LocalizationManager.language_changed.connect(_rebuild_all_ui)
 	AttemptsManager.attempts_changed.connect(func(_r): _rebuild_all_ui())
 
+	_apply_graphics_quality()
 	_rebuild_all_ui()
 	_show_screen("menu")
+
+func _apply_graphics_quality() -> void:
+	var vp := get_viewport()
+	if vp == null:
+		return
+	var q := str(SaveManager.get_setting("graphics_quality", "medium"))
+	match q:
+		"low":
+			vp.msaa_3d = Viewport.MSAA_DISABLED
+		"high":
+			vp.msaa_3d = Viewport.MSAA_4X
+		_:
+			vp.msaa_3d = Viewport.MSAA_2X
 
 func _rebuild_all_ui(_unused = null) -> void:
 	var prev_visible := "menu"
@@ -54,6 +71,8 @@ func _rebuild_all_ui(_unused = null) -> void:
 		prev_visible = "settings"
 	elif hud_panel and hud_panel.visible:
 		prev_visible = "hud"
+	elif pause_panel and pause_panel.visible:
+		prev_visible = "pause"
 
 	for c in ui_layer.get_children():
 		ui_layer.remove_child(c)
@@ -64,6 +83,7 @@ func _rebuild_all_ui(_unused = null) -> void:
 	_build_help()
 	_build_settings()
 	_build_hud()
+	_build_pause_modal()
 	_build_result_modal()
 	_build_attempts_modal()
 	_show_screen(prev_visible)
@@ -110,6 +130,8 @@ func _make_button(text: String, cb: Callable, min_w: float = 280.0) -> Button:
 	b.add_theme_stylebox_override("normal", _make_medieval_style(Color(0.24, 0.16, 0.10, 0.95), Color(0.76, 0.58, 0.28), 12))
 	b.add_theme_stylebox_override("hover", _make_medieval_style(Color(0.34, 0.22, 0.13, 0.98), Color(0.96, 0.78, 0.34), 12))
 	b.add_theme_stylebox_override("pressed", _make_medieval_style(Color(0.16, 0.10, 0.06, 0.98), Color(0.96, 0.78, 0.34), 12))
+	b.add_theme_stylebox_override("disabled", _make_medieval_style(Color(0.14, 0.11, 0.09, 0.65), Color(0.42, 0.34, 0.22, 0.60), 12))
+	b.add_theme_color_override("font_disabled_color", Color(0.65, 0.60, 0.52, 0.75))
 	b.pressed.connect(func():
 		AudioManager.play_sfx("ui_click")
 		cb.call()
@@ -191,7 +213,9 @@ func _build_levels() -> void:
 	vbox.add_child(scroll)
 
 	var grid := GridContainer.new()
-	grid.columns = 5
+	var vp_w := get_viewport().get_visible_rect().size.x
+	grid.columns = maxi(2, mini(5, int(vp_w / 240.0)))
+	grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	grid.add_theme_constant_override("h_separation", 12)
 	grid.add_theme_constant_override("v_separation", 12)
 	scroll.add_child(grid)
@@ -295,7 +319,12 @@ func _build_settings() -> void:
 		row.add_child(lbl)
 		var cb := CheckButton.new()
 		cb.button_pressed = bool(SaveManager.get_setting(item[1], true))
-		cb.toggled.connect(func(v): SaveManager.set_setting(item[1], v))
+		var setting_key: String = item[1]
+		cb.toggled.connect(func(v):
+			SaveManager.set_setting(setting_key, v)
+			if setting_key == "music_enabled":
+				AudioManager.sync_ambient_state()
+		)
 		row.add_child(cb)
 		vbox.add_child(row)
 
@@ -327,7 +356,10 @@ func _build_settings() -> void:
 		q_opt.add_item(LocalizationManager.t("quality_" + q_codes[i]), i)
 		if q_codes[i] == cur_q:
 			q_opt.select(i)
-	q_opt.item_selected.connect(func(idx): SaveManager.set_setting("graphics_quality", q_codes[idx]))
+	q_opt.item_selected.connect(func(idx):
+		SaveManager.set_setting("graphics_quality", q_codes[idx])
+		_apply_graphics_quality()
+	)
 	q_row.add_child(q_opt)
 	vbox.add_child(q_row)
 
@@ -344,6 +376,15 @@ func _build_hud() -> void:
 	_hud_score_lbl.add_theme_font_size_override("font_size", 22)
 	_hud_score_lbl.add_theme_color_override("font_color", Color(0.98, 0.94, 0.84))
 	score_pill.add_child(_hud_score_lbl)
+
+	# Combo badge under score pill
+	_hud_combo_pill = _make_hud_pill(hud_panel, Color(0.36, 0.18, 0.08, 0.90))
+	_hud_combo_pill.position = Vector2(20, 74)
+	_hud_combo_pill.visible = false
+	_hud_combo_lbl = Label.new()
+	_hud_combo_lbl.add_theme_font_size_override("font_size", 18)
+	_hud_combo_lbl.add_theme_color_override("font_color", Color(1.0, 0.84, 0.28))
+	_hud_combo_pill.add_child(_hud_combo_lbl)
 
 	# Top-center slate pill: Wind direction & speed
 	var wind_pill := _make_hud_pill(hud_panel, Color(0.24, 0.34, 0.44, 0.84))
@@ -398,10 +439,7 @@ func _build_hud() -> void:
 	_hit_diagram.visible = false
 	hud_panel.add_child(_hit_diagram)
 
-	var menu_btn := _make_button("II", func():
-		level_scene.show_menu_backdrop()
-		_show_screen("menu")
-	, 58.0)
+	var menu_btn := _make_button("II", func(): _open_pause(), 58.0)
 	menu_btn.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	menu_btn.offset_left = -78
 	menu_btn.offset_top = 16
@@ -427,6 +465,52 @@ func _build_hud() -> void:
 	_reticle_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_reticle_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud_panel.add_child(_reticle_overlay)
+
+func _build_pause_modal() -> void:
+	pause_panel = _make_backdrop(0.76)
+	pause_panel.visible = false
+	var vbox := VBoxContainer.new()
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 14)
+	pause_panel.add_child(vbox)
+
+	var card := PanelContainer.new()
+	card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	card.add_theme_stylebox_override("panel", _make_medieval_style(Color(0.14, 0.10, 0.07, 0.92), Color(0.84, 0.66, 0.32), 20))
+	vbox.add_child(card)
+
+	var inner := VBoxContainer.new()
+	inner.alignment = BoxContainer.ALIGNMENT_CENTER
+	inner.add_theme_constant_override("separation", 12)
+	card.add_child(inner)
+
+	inner.add_child(_make_button(LocalizationManager.t("btn_resume"), func(): _resume_game()))
+	inner.add_child(_make_button(LocalizationManager.t("btn_retry"), func(): _try_start_level(_current_level_id)))
+	inner.add_child(_make_button(LocalizationManager.t("btn_main_menu"), func():
+		level_scene.show_menu_backdrop()
+		_show_screen("menu")
+	))
+
+func _open_pause() -> void:
+	if not level_scene.level_active or level_scene.is_paused:
+		return
+	level_scene.set_paused(true)
+	_show_screen("pause")
+
+func _resume_game() -> void:
+	if not level_scene.level_active:
+		return
+	_show_screen("hud")
+	level_scene.set_paused(false)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
+		if hud_panel != null and hud_panel.visible and level_scene.level_active and not level_scene.is_paused:
+			_open_pause()
+			get_viewport().set_input_as_handled()
+		elif pause_panel != null and pause_panel.visible:
+			_resume_game()
+			get_viewport().set_input_as_handled()
 
 func _build_result_modal() -> void:
 	result_panel = _make_backdrop(0.80)
@@ -462,8 +546,11 @@ func _show_screen(screen_name: String) -> void:
 	help_panel.visible = (screen_name == "help")
 	settings_panel.visible = (screen_name == "settings")
 	hud_panel.visible = (screen_name == "hud")
+	pause_panel.visible = (screen_name == "pause")
 	result_panel.visible = (screen_name == "result")
 	attempts_modal.visible = (screen_name == "no_attempts")
+	if screen_name != "hud" and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func _try_start_level(level_id: int) -> void:
 	if not AttemptsManager.can_play():
@@ -498,6 +585,14 @@ func _on_hud_updated(st: Dictionary) -> void:
 	_hud_arrows_lbl.text = LocalizationManager.t("hud_arrows", {"left": st["arrows_left"], "total": st["arrows_total"]})
 	_hud_timer_lbl.visible = bool(st["has_timer"])
 	_hud_timer_lbl.text = LocalizationManager.t("hud_timer", {"sec": st["time_left"]})
+	if _hud_combo_pill != null and _hud_combo_lbl != null:
+		var c := int(st.get("combo", 0))
+		if c >= 2:
+			var mult_str := "3" if c >= 4 else "1.5"
+			_hud_combo_lbl.text = LocalizationManager.t("hud_combo", {"mult": mult_str})
+			_hud_combo_pill.visible = true
+		else:
+			_hud_combo_pill.visible = false
 
 func _on_hit_feedback(kind: String, pts: int, norm_pos: Vector2) -> void:
 	if _hud_feedback_lbl == null:

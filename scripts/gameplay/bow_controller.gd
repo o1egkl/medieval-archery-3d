@@ -24,6 +24,7 @@ var _string_bot: MeshInstance3D
 var _top_tip := Vector3(0.0, 0.58, 0.12)
 var _bot_tip := Vector3(0.0, -0.58, 0.12)
 var _active_touch_idx: int = -1
+var _draw_source: String = "" # "" | "mouse" | "touch"
 var _recoil: float = 0.0
 var is_touch_mode: bool = false
 var cancel_zone_rect: Rect2 = Rect2()
@@ -214,6 +215,7 @@ func reset_aim() -> void:
 	_yaw = 0.0
 	_pitch = 0.04
 	is_drawing = false
+	_draw_source = ""
 	draw_ratio = 0.0
 	_hold_time = 0.0
 	_recoil = 0.0
@@ -221,9 +223,18 @@ func reset_aim() -> void:
 	_update_bowstring(0.0)
 	emit_signal("draw_changed", 0.0, false)
 
+func set_aim_active(enabled: bool) -> void:
+	input_enabled = enabled
+	if not enabled:
+		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	elif not is_touch_mode and not DisplayServer.is_touchscreen_available():
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
 func cancel_draw() -> void:
 	if is_drawing:
 		is_drawing = false
+		_draw_source = ""
 		draw_ratio = 0.0
 		_hold_time = 0.0
 		_active_touch_idx = -1
@@ -233,6 +244,8 @@ func cancel_draw() -> void:
 func _set_touch_mode(touch: bool) -> void:
 	if is_touch_mode != touch:
 		is_touch_mode = touch
+		if is_touch_mode and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		emit_signal("input_mode_changed", is_touch_mode)
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -247,6 +260,20 @@ func _unhandled_input(event: InputEvent) -> void:
 			AudioManager.play_sfx("ui_click")
 		return
 
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.device != -1:
+		_set_touch_mode(false)
+		if event.pressed and not is_drawing:
+			if not DisplayServer.is_touchscreen_available() and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			_draw_source = "mouse"
+			is_drawing = true
+			draw_ratio = 0.0
+			_hold_time = 0.0
+			AudioManager.play_sfx("bow_draw")
+		elif not event.pressed and is_drawing and _draw_source == "mouse":
+			_release_shot()
+		return
+
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_SPACE or event.keycode == KEY_R:
 			_set_touch_mode(false)
@@ -256,15 +283,15 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 
 	if event is InputEventScreenTouch:
-		if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and event.pressed:
+		if event.pressed and not is_drawing and _draw_source == "" and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			_set_touch_mode(true)
-		if event.pressed and not is_drawing:
+			_draw_source = "touch"
 			_active_touch_idx = event.index
 			is_drawing = true
 			draw_ratio = 0.0
 			_hold_time = 0.0
 			AudioManager.play_sfx("bow_draw")
-		elif not event.pressed and is_drawing and event.index == _active_touch_idx:
+		elif not event.pressed and is_drawing and _draw_source == "touch" and event.index == _active_touch_idx:
 			if cancel_zone_rect.size.x > 0.0 and cancel_zone_rect.has_point(event.position):
 				cancel_draw()
 				AudioManager.play_sfx("ui_click")
@@ -272,16 +299,18 @@ func _unhandled_input(event: InputEvent) -> void:
 				_release_shot()
 			_active_touch_idx = -1
 	elif event is InputEventScreenDrag:
-		if not is_drawing or event.index == _active_touch_idx:
+		if _draw_source == "touch" and event.index == _active_touch_idx:
 			_yaw = clampf(_yaw - event.relative.x * sens, -0.65, 0.65)
 			_pitch = clampf(_pitch - event.relative.y * sens, -0.25, 0.45)
-	elif event is InputEventMouseMotion and not is_drawing:
-		_set_touch_mode(false)
-		_yaw = clampf(_yaw - event.relative.x * sens, -0.65, 0.65)
-		_pitch = clampf(_pitch - event.relative.y * sens, -0.25, 0.45)
+	elif event is InputEventMouseMotion:
+		if _draw_source != "touch":
+			_set_touch_mode(false)
+			_yaw = clampf(_yaw - event.relative.x * sens, -0.65, 0.65)
+			_pitch = clampf(_pitch - event.relative.y * sens, -0.25, 0.45)
 
 func _release_shot() -> void:
 	is_drawing = false
+	_draw_source = ""
 	if draw_ratio < 0.18:
 		draw_ratio = 0.0
 		_update_bowstring(0.0)
@@ -321,7 +350,8 @@ func _process(delta: float) -> void:
 		_pitch = clampf(_pitch + gyro.x * delta * 0.45, -0.25, 0.45)
 
 	rotation = Vector3(_pitch + sway_y + _recoil * 0.015, _yaw + sway_x, 0.0)
-	fov = lerpf(fov, 50.0 if is_drawing else 60.0, delta * 8.0)
+	var target_fov := lerpf(60.0, 39.0, draw_ratio) if is_drawing else 60.0
+	fov = lerpf(fov, target_fov, delta * 8.0)
 	_update_bowstring(draw_ratio)
 	if _bow_node != null:
 		var idle_bob := sin(Time.get_ticks_msec() * 0.002) * 0.006

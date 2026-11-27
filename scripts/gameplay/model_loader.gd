@@ -24,7 +24,7 @@ static func _get_palette_material(tex_path: String) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
 	mat.albedo_texture = tex
 	mat.roughness = 0.85
-	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	_palette_mat_cache[tex_path] = mat
 	return mat
 
@@ -34,6 +34,12 @@ static func _apply_material_recursive(node: Node, mat: Material) -> void:
 		mi.material_override = mat
 	for child in node.get_children():
 		_apply_material_recursive(child, mat)
+
+static func _set_owner_recursive(node: Node, owner_node: Node) -> void:
+	if node != owner_node:
+		node.owner = owner_node
+	for child in node.get_children():
+		_set_owner_recursive(child, owner_node)
 
 static func instantiate_glb(res_path: String) -> Node3D:
 	var instance: Node3D = null
@@ -56,7 +62,18 @@ static func instantiate_glb(res_path: String) -> Node3D:
 			if doc.append_from_file(abs_path, state) == OK:
 				var node := doc.generate_scene(state)
 				if node is Node3D:
-					instance = node
+					var pal_path := _get_palette_for_model(res_path)
+					if pal_path != "":
+						var pmat := _get_palette_material(pal_path)
+						if pmat != null:
+							_apply_material_recursive(node, pmat)
+					_set_owner_recursive(node, node)
+					var ps := PackedScene.new()
+					if ps.pack(node) == OK:
+						_scene_cache[res_path] = ps
+						node.free()
+						return ps.instantiate() as Node3D
+					return node as Node3D
 
 	if instance != null:
 		var pal_path := _get_palette_for_model(res_path)

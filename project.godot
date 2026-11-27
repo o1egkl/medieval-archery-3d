@@ -22,6 +22,7 @@ AudioManager="*res://scripts/autoload/audio_manager.gd"
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+window/dpi/allow_hidpi=true
 window/handheld/orientation=0
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
@@ -36,3 +37,5 @@ sensors/enable_gyroscope=true
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
+textures/default_filters/anisotropic_filtering_level=2
+anti_aliasing/quality/msaa_3d=1

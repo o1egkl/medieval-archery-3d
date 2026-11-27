@@ -39,6 +39,7 @@ static func get_pbr_material(name_key: String, uv_scale: Vector3 = Vector3.ONE, 
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = tint
 	mat.uv1_scale = uv_scale
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 
 	var alb := _load_tex("res://assets/textures/%s_albedo.jpg" % name_key)
 	if alb != null:

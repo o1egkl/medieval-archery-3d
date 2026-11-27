@@ -16,7 +16,9 @@ var _env_root: Node3D
 var _targets_root: Node3D
 var _arrows_root: Node3D
 var _flags: Array[Node3D] = []
+var _flag_mats: Array[ShaderMaterial] = []
 var _windmill_blades: Node3D
+var is_paused: bool = false
 
 var level_cfg: Dictionary = {}
 var score: int = 0
@@ -76,6 +78,7 @@ func start_level(level_id: int) -> void:
 	max_bullseye_streak = 0
 	active_arrows = 0
 	level_active = true
+	is_paused = false
 	_knockable_targets_left = 0
 	_all_cleared_awarded = false
 
@@ -92,16 +95,30 @@ func start_level(level_id: int) -> void:
 			t.target_knocked_down.connect(_on_target_knocked_down)
 
 	camera.reset_aim()
-	camera.input_enabled = true
+	camera.set_aim_active(true)
 	_emit_hud()
 
 func stop_level() -> void:
 	level_active = false
-	camera.input_enabled = false
+	is_paused = false
+	camera.set_aim_active(false)
 	camera.cancel_draw()
+
+func set_paused(paused: bool) -> void:
+	if not level_active:
+		return
+	is_paused = paused
+	camera.set_aim_active(not paused)
+	if paused:
+		camera.cancel_draw()
+	for ch in _targets_root.get_children():
+		ch.set_process(not paused)
+	for arr in _arrows_root.get_children():
+		arr.set_physics_process(not paused)
 
 func _clear_scene() -> void:
 	_flags.clear()
+	_flag_mats.clear()
 	_windmill_blades = null
 	for n in _env_root.get_children():
 		n.queue_free()
@@ -136,32 +153,42 @@ func _build_biome(biome: String) -> void:
 			light.light_energy = 0.94
 		"forest":
 			env.fog_enabled = true
+			env.fog_mode = Environment.FOG_MODE_DEPTH
 			env.fog_light_color = Color(0.72, 0.48, 0.36)
-			env.fog_density = 0.008
+			env.fog_depth_begin = 78.0
+			env.fog_depth_end = 160.0
+			env.fog_density = 0.42
 			light.light_color = Color(1.0, 0.72, 0.48)
-			light.light_energy = 0.90
+			light.light_energy = 0.96
 			ground_tint = Color(0.72, 0.74, 0.62)
 		"fortress":
 			env.fog_enabled = true
+			env.fog_mode = Environment.FOG_MODE_DEPTH
 			env.fog_light_color = Color(0.12, 0.15, 0.26)
-			env.fog_density = 0.008
-			light.light_color = Color(0.68, 0.78, 1.0)
-			light.light_energy = 0.65
+			env.fog_depth_begin = 78.0
+			env.fog_depth_end = 160.0
+			env.fog_density = 0.45
+			light.light_color = Color(0.74, 0.84, 1.0)
+			light.light_energy = 0.78
 			ground_tint = Color(0.45, 0.48, 0.52)
 
 	sky.sky_material = sky_mat
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.28 if biome != "fortress" else 0.22
+	env.ambient_light_energy = 0.30 if biome != "fortress" else 0.26
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
-	env.tonemap_exposure = 0.82
+	env.tonemap_exposure = 0.94
 	env.glow_enabled = (biome == "fortress" and quality != "low")
-	env.glow_intensity = 0.22
-	env.glow_bloom = 0.05
+	env.glow_intensity = 0.14
+	env.glow_bloom = 0.0
+	env.glow_hdr_threshold = 1.4
 	if not env.fog_enabled:
 		env.fog_enabled = true
+		env.fog_mode = Environment.FOG_MODE_DEPTH
 		env.fog_light_color = Color(0.68, 0.78, 0.88)
-		env.fog_density = 0.0009
+		env.fog_depth_begin = 82.0
+		env.fog_depth_end = 170.0
+		env.fog_density = 0.18
 	world_env.environment = env
 	_env_root.add_child(world_env)
 	_env_root.add_child(light)
@@ -274,7 +301,7 @@ func _build_grass_tufts(count: int, tint: Color) -> void:
 		st.add_vertex(Vector3(0.0, 0.34, 0.0))
 	var tuft_mesh := st.commit()
 	var gmat := StandardMaterial3D.new()
-	gmat.albedo_color = Color(0.20, 0.38, 0.12) * tint
+	gmat.albedo_color = Color(0.28, 0.50, 0.16) * tint
 	gmat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	gmat.roughness = 0.92
 	tuft_mesh.surface_set_material(0, gmat)
@@ -285,9 +312,9 @@ func _build_grass_tufts(count: int, tint: Color) -> void:
 	for i in range(count):
 		var x: float = rng.randf_range(-24.0, 24.0)
 		var z: float = rng.randf_range(-68.0, -4.0)
-		# Keep center dirt lane mostly clear of tall grass
-		if absf(x) < 2.6:
-			x = (3.0 + rng.randf_range(0.0, 12.0)) * (-1.0 if x < 0.0 else 1.0)
+		# Keep the entire dirt shooting lane (~7.3m half-width) clear of grass tufts
+		if absf(x) < 7.5:
+			x = rng.randf_range(7.8, 24.0) * (-1.0 if x < 0.0 else 1.0)
 		var h_scale: float = rng.randf_range(0.65, 1.45)
 		var rot_y: float = rng.randf_range(0.0, TAU)
 		var tilt_x: float = rng.randf_range(-0.22, 0.22)
@@ -344,7 +371,9 @@ func _build_wind_flags() -> void:
 			flag.position = Vector3(1.2, 0.0, 0.0)
 			var fcol: Color = colors[idx % colors.size()]
 			var scol: Color = Color(0.96, 0.82, 0.22) if fcol.r > 0.5 else Color(0.95, 0.94, 0.90)
-			flag.material_override = PbrAssets.make_flag_shader_material(fcol, scol, wind_speed)
+			var fmat := PbrAssets.make_flag_shader_material(fcol, scol, wind_speed)
+			flag.material_override = fmat
+			_flag_mats.append(fmat)
 			flag_pivot.add_child(flag)
 			_flags.append(flag_pivot)
 			idx += 1
@@ -411,11 +440,11 @@ func _build_castle(pos: Vector3) -> void:
 		_place_glb("res://assets/models/castle_sq_mid.glb", Vector3(tx, s * 1.90, 0.4), 0.0, s, root)
 		_place_glb("res://assets/models/castle_sq_roof.glb", Vector3(tx, s * 2.85, 0.4), 0.0, s, root)
 
-	# 2 outer hexagonal stone towers with pointed roofs
+	# 2 outer hexagonal stone towers with pointed roofs (base height 1.31, mid height 0.46)
 	for tx: float in [-3.3 * s, 3.3 * s]:
 		_place_glb("res://assets/models/castle_tower_base.glb", Vector3(tx, 0.0, 0.5), 0.0, s, root)
-		_place_glb("res://assets/models/castle_tower_mid.glb", Vector3(tx, s * 0.95, 0.5), 0.0, s, root)
-		_place_glb("res://assets/models/castle_tower_roof.glb", Vector3(tx, s * 1.90, 0.5), 0.0, s, root)
+		_place_glb("res://assets/models/castle_tower_mid.glb", Vector3(tx, s * 1.25, 0.5), 0.0, s, root)
+		_place_glb("res://assets/models/castle_tower_roof.glb", Vector3(tx, s * 1.68, 0.5), 0.0, s, root)
 
 func _build_windmill(pos: Vector3) -> void:
 	var root := Node3D.new()
@@ -545,7 +574,7 @@ func _process(delta: float) -> void:
 	if _windmill_blades != null:
 		_windmill_blades.rotation.z -= delta * 0.8
 
-	if not level_active:
+	if not level_active or is_paused:
 		return
 
 	if bool(level_cfg.get("wind_gusty", false)):
@@ -553,6 +582,8 @@ func _process(delta: float) -> void:
 		if _wind_timer >= 4.5:
 			_wind_timer = 0.0
 			wind_speed = randf_range(float(level_cfg.get("wind_min", 0.0)), float(level_cfg.get("wind_max", 0.0))) * wind_dir
+			for fmat in _flag_mats:
+				fmat.set_shader_parameter("wind_strength", maxf(absf(wind_speed), 1.5))
 			_emit_hud()
 
 	if float(level_cfg.get("time_limit_sec", 0)) > 0.0:
@@ -582,12 +613,15 @@ func _check_end_condition() -> void:
 
 func _finish_level() -> void:
 	level_active = false
-	camera.input_enabled = false
+	is_paused = false
+	camera.set_aim_active(false)
 	camera.cancel_draw()
 
 	var target_score := int(level_cfg.get("target_score", 150))
+	if _all_cleared_awarded and arrows_left > 0:
+		score += arrows_left * 50
 	var won := score >= target_score
-	if won and arrows_left > 0:
+	if won and not _all_cleared_awarded and arrows_left > 0:
 		score += arrows_left * 25
 
 	var stars := 0
