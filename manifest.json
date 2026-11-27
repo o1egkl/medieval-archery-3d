@@ -1,0 +1,41 @@
+{
+  "schema": 4,
+  "required_executas": [],
+  "tags": [
+    "archery",
+    "3d",
+    "medieval",
+    "game",
+    "shooting"
+  ],
+  "ui": {
+    "bundle": {
+      "format": "static-spa",
+      "entry": "index.html",
+      "external_origins": []
+    },
+    "browser_permissions": [
+      "fullscreen",
+      "autoplay"
+    ],
+    "form_factors": [
+      "desktop",
+      "mobile"
+    ],
+    "views": [
+      {
+        "name": "main",
+        "title": "Medieval Archery Range 3D",
+        "default": true,
+        "default_size": {
+          "w": 1280,
+          "h": 720
+        },
+        "min_size": {
+          "w": 640,
+          "h": 400
+        }
+      }
+    ]
+  }
+}

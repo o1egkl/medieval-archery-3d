@@ -1,0 +1,18 @@
+{
+  "name": "Medieval Archery Range 3D",
+  "slug": "medieval-archery-3d",
+  "version": "1.0.0",
+  "category": "entertainment",
+  "tagline": "First-person 3D medieval archery range with 50 levels, 4 biomes, realistic arrow ballistics, crosswind, moving targets, and instant hit diagram.",
+  "description": "Step onto the medieval archery range in **Medieval Archery Range 3D** — a first-person 3D archery game with realistic arrow physics, dynamic crosswinds, and 50 handcrafted levels across 4 atmospheric biomes.\n\n### Core Features\n\n- **50-Level Campaign Across 4 Medieval Biomes**: Progress through the sunlit **Village Courtyard**, **Royal Tournament** pavilions, **Dusk Forest**, and rain-swept **Night Fortress** with torchlit ramparts and boss stages every 5 levels.\n- **Realistic Ballistics & Dynamic Wind**: Compensate for gravity drop and shifting crosswinds indicated by the top wind badge and animated heraldic banners.\n- **6 Target Mechanics**: Practice on static targets, track horizontal rail targets, time swinging pendulums and pop-up targets, smash bonus barrels (`+75` pts), and avoid red penalty shields (`-50` pts).\n- **Precision Aiming & Instant Hit Diagram**: Drawing the recurve bow smoothly zooms the camera (`60° → 39°`) with a curved golden tension arc, fatigue sway if held too long, and a top-right closeup target diagram pinpointing your recent shots.\n- **Combo Multiplier & 3-Star Progression**: Land consecutive hits for up to `x3` combo points, earn `+100` for clearing all targets, and unlock levels with 1–3 star mastery.\n- **Desktop & Mobile Friendly + EN/RU**: Aim smoothly with mouse or touch drag, cancel a draw anytime (`RMB` / `Space` / `R` or Relax Bow button), and switch seamlessly between **English** and **Russian** with customizable graphics quality (Low / Medium / High with MSAA).",
+  "logo_file": "assets/listing/icon-512.png",
+  "screenshots": [
+    "assets/listing/screenshot-1-tournament.png",
+    "assets/listing/screenshot-2-aiming.png",
+    "assets/listing/screenshot-3-forest.png",
+    "assets/listing/screenshot-4-fortress.png",
+    "assets/listing/screenshot-5-menu.png"
+  ],
+  "homepage_url": "https://github.com/o1egkl/medieval-archery-3d",
+  "support_url": "https://github.com/o1egkl/medieval-archery-3d/issues"
+}
