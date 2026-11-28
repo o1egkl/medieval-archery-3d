@@ -76,6 +76,10 @@
       "en": "Combo x{mult}",
       "ru": "Серия x{mult}"
     },
+    "hud_barrel": {
+      "en": "Bonus Barrel: {count} (+75)",
+      "ru": "Бонус-бочка: {count} (+75)"
+    },
     "attempts_badge": {
       "en": "Daily Attempts: {left} / {base}",
       "ru": "Попытки на сегодня: {left} / {base}"

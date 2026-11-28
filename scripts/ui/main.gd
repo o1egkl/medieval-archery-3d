@@ -19,6 +19,7 @@ var attempts_modal: Control
 var _current_level_id: int = 1
 var _hud_score_lbl: Label
 var _hud_combo_lbl: Label
+var _hud_barrel_lbl: Label
 var _hud_wind_lbl: Label
 var _hud_arrows_lbl: Label
 var _hud_timer_lbl: Label
@@ -27,6 +28,7 @@ var _reticle_overlay: Control
 var _hit_diagram: Control
 var _hud_feedback_pill: PanelContainer
 var _hud_combo_pill: PanelContainer
+var _hud_barrel_pill: PanelContainer
 var _cancel_btn: Button
 
 func _ready() -> void:
@@ -386,6 +388,19 @@ func _build_hud() -> void:
 	_hud_combo_lbl.add_theme_color_override("font_color", Color(1.0, 0.84, 0.28))
 	_hud_combo_pill.add_child(_hud_combo_lbl)
 
+	# Bonus Barrel indicator badge (top-right, left of pause button)
+	_hud_barrel_pill = _make_hud_pill(hud_panel, Color(0.34, 0.22, 0.06, 0.90))
+	_hud_barrel_pill.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_hud_barrel_pill.offset_top = 16
+	_hud_barrel_pill.offset_right = -92
+	_hud_barrel_pill.offset_left = -336
+	_hud_barrel_pill.visible = false
+	_hud_barrel_lbl = Label.new()
+	_hud_barrel_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_hud_barrel_lbl.add_theme_font_size_override("font_size", 18)
+	_hud_barrel_lbl.add_theme_color_override("font_color", Color(1.0, 0.86, 0.28))
+	_hud_barrel_pill.add_child(_hud_barrel_lbl)
+
 	# Top-center slate pill: Wind direction & speed
 	var wind_pill := _make_hud_pill(hud_panel, Color(0.24, 0.34, 0.44, 0.84))
 	wind_pill.set_anchors_preset(Control.PRESET_CENTER_TOP)
@@ -593,6 +608,13 @@ func _on_hud_updated(st: Dictionary) -> void:
 			_hud_combo_pill.visible = true
 		else:
 			_hud_combo_pill.visible = false
+	if _hud_barrel_pill != null and _hud_barrel_lbl != null:
+		var bl := int(st.get("barrels_left", 0))
+		if bl > 0:
+			_hud_barrel_lbl.text = LocalizationManager.t("hud_barrel", {"count": bl})
+			_hud_barrel_pill.visible = true
+		else:
+			_hud_barrel_pill.visible = false
 
 func _on_hit_feedback(kind: String, pts: int, norm_pos: Vector2) -> void:
 	if _hud_feedback_lbl == null:

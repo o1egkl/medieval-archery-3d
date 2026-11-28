@@ -79,5 +79,5 @@ static func make_flag_shader_material(flag_col: Color, stripe_col: Color, wind_s
 	mat.shader = sh
 	mat.set_shader_parameter("flag_color", flag_col)
 	mat.set_shader_parameter("stripe_color", stripe_col)
-	mat.set_shader_parameter("wind_strength", maxf(absf(wind_spd), 1.5))
+	mat.set_shader_parameter("wind_strength", absf(wind_spd))
 	return mat

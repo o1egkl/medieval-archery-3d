@@ -33,6 +33,7 @@ var max_bullseye_streak: int = 0
 var active_arrows: int = 0
 var level_active: bool = false
 var _knockable_targets_left: int = 0
+var _barrels_left: int = 0
 var _all_cleared_awarded: bool = false
 var _wind_timer: float = 0.0
 
@@ -80,6 +81,7 @@ func start_level(level_id: int) -> void:
 	level_active = true
 	is_paused = false
 	_knockable_targets_left = 0
+	_barrels_left = 0
 	_all_cleared_awarded = false
 
 	wind_dir = -1.0 if randf() < 0.5 else 1.0
@@ -90,7 +92,9 @@ func start_level(level_id: int) -> void:
 		var t := TargetScript.new()
 		_targets_root.add_child(t)
 		t.setup(tcfg)
-		if t.max_hits > 0 and t.target_type != "barrel_bonus":
+		if t.target_type == "barrel_bonus":
+			_barrels_left += 1
+		elif t.max_hits > 0:
 			_knockable_targets_left += 1
 			t.target_knocked_down.connect(_on_target_knocked_down)
 
@@ -545,6 +549,8 @@ func _on_arrow_resolved(hit_info: Dictionary) -> void:
 			mult = 1.5
 		var final_pts := int(round(pts * mult))
 		score += final_pts
+		if kind == "barrel":
+			_barrels_left = maxi(0, _barrels_left - 1)
 		if bool(hit_info.get("bullseye", false)):
 			bullseye_streak += 1
 			max_bullseye_streak = maxi(max_bullseye_streak, bullseye_streak)
@@ -567,10 +573,12 @@ func _on_arrow_resolved(hit_info: Dictionary) -> void:
 	_check_end_condition()
 
 func _process(delta: float) -> void:
-	# Animate wind flags & windmill even on menu backdrop
+	# Animate wind flags & windmill proportionally to actual wind speed
 	var w_abs: float = absf(wind_speed)
+	var sway_amp := 0.015 + minf(w_abs, 8.0) * 0.016
+	var sway_freq := 0.002 + minf(w_abs, 8.0) * 0.0007
 	for f in _flags:
-		f.rotation.y = sin(Time.get_ticks_msec() * 0.006 * maxf(w_abs, 1.0)) * 0.18 + (0.0 if wind_speed >= 0.0 else PI)
+		f.rotation.y = sin(Time.get_ticks_msec() * sway_freq) * sway_amp + (0.0 if wind_speed >= 0.0 else PI)
 	if _windmill_blades != null:
 		_windmill_blades.rotation.z -= delta * 0.8
 
@@ -579,11 +587,11 @@ func _process(delta: float) -> void:
 
 	if bool(level_cfg.get("wind_gusty", false)):
 		_wind_timer += delta
-		if _wind_timer >= 4.5:
+		if _wind_timer >= 7.0:
 			_wind_timer = 0.0
 			wind_speed = randf_range(float(level_cfg.get("wind_min", 0.0)), float(level_cfg.get("wind_max", 0.0))) * wind_dir
 			for fmat in _flag_mats:
-				fmat.set_shader_parameter("wind_strength", maxf(absf(wind_speed), 1.5))
+				fmat.set_shader_parameter("wind_strength", absf(wind_speed))
 			_emit_hud()
 
 	if float(level_cfg.get("time_limit_sec", 0)) > 0.0:
@@ -663,5 +671,6 @@ func _emit_hud() -> void:
 		"wind_speed": wind_speed,
 		"time_left": int(ceil(time_left)),
 		"has_timer": float(level_cfg.get("time_limit_sec", 0)) > 0.0,
-		"combo": combo_streak
+		"combo": combo_streak,
+		"barrels_left": _barrels_left
 	})

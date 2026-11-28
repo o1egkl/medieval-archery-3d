@@ -3,7 +3,7 @@ extends Node3D
 signal arrow_resolved(hit_info: Dictionary)
 
 const GRAVITY := 6.5
-const WIND_FACTOR := 0.38
+const WIND_FACTOR := 0.30
 const MAX_FLIGHT_TIME := 5.5
 
 var velocity: Vector3 = Vector3.ZERO

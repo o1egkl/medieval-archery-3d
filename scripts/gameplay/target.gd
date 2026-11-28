@@ -17,6 +17,8 @@ var is_knocked_down: bool = false
 var _pivot: Node3D
 var _col_shape: CollisionShape3D
 var _rail_beam: Node3D
+var _beacon_node: Node3D
+var _halo_mat: StandardMaterial3D
 
 func setup(cfg: Dictionary) -> void:
 	target_type = str(cfg.get("type", "static"))
@@ -50,21 +52,44 @@ func _build_mesh() -> void:
 	var wood_mat := _make_wood_mat()
 
 	if target_type == "barrel_bonus":
+		# Wooden crate pedestal so the bonus barrel stands clearly above ground
+		var crate := MeshInstance3D.new()
+		var crm := BoxMesh.new()
+		crm.size = Vector3(radius * 1.6, 0.78, radius * 1.6)
+		crate.mesh = crm
+		crate.position.y = -radius * 1.48
+		crate.material_override = wood_mat
+		add_child(crate)
+
 		var glb_barrel := ModelLoader.instantiate_glb("res://assets/models/barrel.glb")
-		# Bright golden-red band so players instantly recognize the optional bonus barrel
+		# Vertical facing golden halo framing the barrel toward the archer
 		var halo := MeshInstance3D.new()
 		var hm := TorusMesh.new()
-		hm.inner_radius = radius * 0.72
-		hm.outer_radius = radius * 0.94
+		hm.inner_radius = radius * 0.92
+		hm.outer_radius = radius * 1.10
 		halo.mesh = hm
-		halo.position.y = 0.05
-		var hmat := StandardMaterial3D.new()
-		hmat.albedo_color = Color(1.0, 0.78, 0.12)
-		hmat.emission_enabled = true
-		hmat.emission = Color(1.0, 0.65, 0.10)
-		hmat.emission_energy_multiplier = 1.4
-		halo.material_override = hmat
+		halo.rotation_degrees.x = 90.0
+		halo.position = Vector3(0.0, 0.0, 0.06)
+		_halo_mat = StandardMaterial3D.new()
+		_halo_mat.albedo_color = Color(1.0, 0.82, 0.16)
+		_halo_mat.emission_enabled = true
+		_halo_mat.emission = Color(1.0, 0.68, 0.10)
+		_halo_mat.emission_energy_multiplier = 1.6
+		halo.material_override = _halo_mat
 		_pivot.add_child(halo)
+
+		# Floating golden diamond beacon above the barrel for instant recognition
+		_beacon_node = Node3D.new()
+		_beacon_node.position = Vector3(0.0, radius * 1.45, 0.0)
+		var diamond := MeshInstance3D.new()
+		var dm := BoxMesh.new()
+		dm.size = Vector3(0.24, 0.24, 0.24)
+		diamond.mesh = dm
+		diamond.rotation_degrees = Vector3(45.0, 45.0, 0.0)
+		diamond.material_override = _halo_mat
+		_beacon_node.add_child(diamond)
+		_pivot.add_child(_beacon_node)
+
 		if glb_barrel != null:
 			glb_barrel.scale = Vector3.ONE * (radius * 5.8)
 			glb_barrel.position.y = -radius * 0.87
@@ -232,6 +257,12 @@ func _process(delta: float) -> void:
 			position.y = base_pos.y - (1.0 - lift) * amplitude
 		"shield_penalty":
 			position.x = base_pos.x + sin(_time * move_speed) * amplitude
+		"barrel_bonus":
+			if _beacon_node != null:
+				_beacon_node.rotation.y += delta * 2.2
+				_beacon_node.position.y = radius * 1.45 + sin(_time * 3.4) * 0.12
+			if _halo_mat != null:
+				_halo_mat.emission_energy_multiplier = 1.3 + sin(_time * 4.2) * 0.5
 
 func _spawn_hit_burst(local_hit: Vector3, is_bullseye: bool) -> void:
 	var burst := CPUParticles3D.new()
@@ -309,6 +340,8 @@ func _tilt_damaged() -> void:
 
 func _knock_down() -> void:
 	is_knocked_down = true
+	if _beacon_node != null:
+		_beacon_node.visible = false
 	if _col_shape != null:
 		_col_shape.set_deferred("disabled", true)
 	AudioManager.play_sfx("target_fall")
